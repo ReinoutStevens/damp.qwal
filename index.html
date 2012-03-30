@@ -1,0 +1,263 @@
+<html>
+  <head>
+    <title>qrpe.core - QRPE API documentation</title>
+    <link href="static/favicon.png" rel="icon" />
+    <link href="static/favicon.png" rel="shortcut icon" />
+    <link media="all" type="text/css" href="static/clojure.css" rel="stylesheet" />
+    <link media="all" type="text/css" href="static/wiki.css" rel="stylesheet" />
+    <link media="all" type="text/css" href="static/internal.css" rel="stylesheet" />
+    <style>.menuWrapper{height: 36px;}</style>
+    <!--[if lte IE 6]>
+    <link rel="stylesheet" href="http://www.wikispaces.com/_/2009051601/s/internal_ie.css" type="text/css" />
+    <![endif]-->
+  </head>
+<!--
+This document was auto-generated from the source by the clojure autodoc system.
+To report errors or ask questions about the overall documentation structure, formatting,
+etc., contact Tom Faulhaber (google mail name: tomfaulhaber).
+For errors in the documentation of a particular namespace, contact the author of that
+namespace.
+-->
+  <body>
+    <div id="AllContentContainer">
+      <div id="Header">
+	<a id="Logo" href="index.html"><img alt="Clojure" height="100" width="100" src="static/clojure-icon.gif" /></a>
+	<h1><a title="page header title" id="page-header" href="index.html">Quantified Regular Path Expressions</a></h1>
+      </div>
+      <div id="leftcolumn"><div style="text-align: center;"></div>
+<div class="menu">
+  <div class="WikiCustomNav WikiElement wiki">
+    <span class="toc-header"><span id="project-name">QRPE</span> <span id="version"></span> API</span><br />
+    <ul>
+      <li><a class="wiki_link" href="index.html">Overview</a></li>
+      <li><a class="wiki_link" href="api-index.html">API Index</a></li>
+    </ul>
+    
+    
+    <a href="http://clojure.org" class="wiki_link">Clojure Home</a>
+  </div>
+</div>
+</div>
+      <div id="rightcolumn">
+	<div id="Content">
+	  <div class="contentBox"><div class="innerContentBox">
+              <div id="content_view" class="wiki wikiPage">
+                <div id="right-sidebar"><div id="toc">
+  <h1 class="nopad">Table of Contents</h1>
+  <div style="margin-left: 1em;" class="toc-section">
+    <a href="#toc0">Overview</a>
+    <div style="margin-left: 1em;" class="toc-entry">
+      <a href="#qrpe.core/in-current">in-current</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#qrpe.core/q*">q*</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#qrpe.core/q*=&gt;">q*=&gt;</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#qrpe.core/q+">q+</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#qrpe.core/q+=&gt;">q+=&gt;</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#qrpe.core/q?">q?</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#qrpe.core/qrpe">qrpe</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#qrpe.core/solve-goal">solve-goal</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#qrpe.core/solve-goals">solve-goals</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#qrpe.core/solve-qrpe">solve-qrpe</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#qrpe.core/to-node">to-node</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#qrpe.core/trans">trans</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#qrpe.core/with-current">with-current</a>
+    </div>
+    <br />
+  </div>
+</div>
+</div>
+                <div id="content-tag"><h1 id="overview">API for <span id="namespace-name">qrpe.core</span>
+  - <span id="header-project">QRPE</span> <span id="header-version"></span>
+  </h1>
+<span id="author-line">by <span id="author-name">Reinout Stevens</span><br /></span>
+<br />Full namespace name: <span id="long-name">qrpe.core</span>
+<p></p>
+<h2>Overview</h2>
+<pre id="namespace-docstr">(Quantified) regular path expressions over graphlike structures</pre>
+
+
+<br />
+<h2>Public Variables and Functions</h2>
+<div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="qrpe.core/in-current">in-current</h2>
+  <span id="var-type">macro</span><br />
+  <pre id="var-usage">Usage: (in-current &amp; goals)
+</pre>
+  <pre id="var-docstr">macro to evaluate a series of goals in the same world</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="qrpe.core/q*">q*</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (q* &amp; goals)
+</pre>
+  <pre id="var-docstr">goals may succeed zero to multiple times.
+Should detect loops by using tabled/slg resolution</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="qrpe.core/q*=&gt;">q*=&gt;</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (q*=&gt; &amp; goals)
+</pre>
+  <pre id="var-docstr">see q* but also calls =&gt; at the end of goals</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="qrpe.core/q+">q+</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (q+ &amp; goals)
+</pre>
+  <pre id="var-docstr">same as q*, except goals should succeed at least once</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="qrpe.core/q+=&gt;">q+=&gt;</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (q+=&gt; &amp; goals)
+</pre>
+  <pre id="var-docstr">same as q+ but also calls =&gt; at the end of goals</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="qrpe.core/q?">q?</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (q? &amp; goals)
+</pre>
+  <pre id="var-docstr">goals may succeed or not</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="qrpe.core/qrpe">qrpe</h2>
+  <span id="var-type">macro</span><br />
+  <pre id="var-usage">Usage: (qrpe graph start end bindings &amp; exps)
+</pre>
+  <pre id="var-docstr">A macro on top of solve-qrpe that allows for nicer syntax.
+Graph holds the graph, and should at least understand :nodes
+Start and end are unified with nodes in graph.
+Bindings are the new introduced variables that are kept throughout the pathexpression.
+Exps are the actual goals that should hold on the path through the graph.
+Each goal should be a rule that takes 2 variables.
+First variable is the current world, and will be ground.
+Second variable is the next world, and goal must ground this.</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="qrpe.core/solve-goal">solve-goal</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (solve-goal goal curr next)
+</pre>
+  <pre id="var-docstr">calls goal with curr and next. curr is a grounded node. goal should ground next</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="qrpe.core/solve-goals">solve-goals</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (solve-goals goals curr end)
+</pre>
+  <pre id="var-docstr">goals is a list of goals. Each goal is a rule with two arguments, current and next world.
+Each goal is called, passing the next version of the previous goal as the
+current version of the current goal</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="qrpe.core/solve-qrpe">solve-qrpe</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (solve-qrpe start end &amp; goals)
+</pre>
+  <pre id="var-docstr">main rule that solves a qrpe</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="qrpe.core/to-node">to-node</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (to-node node to)
+</pre>
+  <pre id="var-docstr">succeeds when to is the list of nodes that are direct successors of node</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="qrpe.core/trans">trans</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (trans node next)
+</pre>
+  <pre id="var-docstr">succeeds when next is a direct successor of node</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="qrpe.core/with-current">with-current</h2>
+  <span id="var-type">macro</span><br />
+  <pre id="var-usage">Usage: (with-current [current] &amp; goals)
+</pre>
+  <pre id="var-docstr">macro that evaluates a series of goals in the current world. current is bound to the current world</pre>
+  
+  
+  
+</div>
+
+
+</div>
+              </div>
+            </div>
+          </div>
+	</div>
+	<div id="foot">
+	  <div style="text-align: center;" id="copyright">No copyright info </div>
+	</div>
+      </div>
+      <div id="DesignedBy">Logo &amp; site design by <a title="Visit Tom Hickey's website." href="http://www.tomhickey.com">Tom Hickey</a>.<br />
+      Clojure auto-documentation system by Tom Faulhaber.</div>
+    </div>
+    <!-- /AllContentContainer -->
+  </body>
+
+</html>
