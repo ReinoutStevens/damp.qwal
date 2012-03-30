@@ -86,13 +86,13 @@ current version of the current goal" }
                           (solve-goal h curr next)
                           (solve-goals t next end)))]))
 
-(defn =>
+(defn q=>
   ^{:doc "fancier syntax for trans"}
   [current next]
   (trans current next))
 
 
-(defn <=
+(defn q<=
   ^{:doc "reverse transition"}
   [current previous]
   (trans previous current))
@@ -118,7 +118,7 @@ Should detect loops by using tabled/slg resolution"}
 (defn
   ^{:doc "see q* but also calls => at the end of goals"}
   q*=> [& goals]
-  (apply q* (conj goals =>))) 
+  (apply q* (conj goals q=>))) 
      
 
 (defn
@@ -132,14 +132,14 @@ Should detect loops by using tabled/slg resolution"}
 (defn
   ^{:doc "same as q+ but also calls => at the end of goals"}
   q+=> [& goals]
-  (apply q+ (conj goals =>)))
+  (apply q+ (conj goals q=>)))
 
 
 (defn
   ^{:doc "goals may succeed or not"}
   q? [& goals]
   (fn [curr next]
-    (conde [(solve-goals goals current next)]
+    (conde [(solve-goals goals curr next)]
            [(== curr next)])))
 
 
@@ -208,8 +208,8 @@ Second variable is the next world, and goal must ground this." }
               (q* (with-current [curr] (has-info curr :foo)))
               (q*=> (with-current [curr] (fresh [info] (has-info curr info))))
               (with-current [curr] (has-info curr :foo))
-              =>
+              q=>
               (with-current [curr] (has-info curr :bar))
-              =>
+              q=>
               (with-current [curr] (has-info curr :baz))))
 )
