@@ -1,7 +1,6 @@
 # damp.qwal
 
 QWAL is a path expression library to allow querying graphlike structures using core.logic in Clojure.
-The 
 
 ## Regular Path Expressions
 Regular Path Expressions are a way to express paths throughout a graph. A path expression can be seen as a highlevel description of a valid
