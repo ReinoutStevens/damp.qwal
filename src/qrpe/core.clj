@@ -91,7 +91,8 @@ current version of the current goal" }
 (defn q<=
   ^{:doc "reverse transition"}
   [graph current previous]
-  (trans graph previous current))
+  (conde [(membero previous (:nodes graph))
+          (trans graph previous current)]))
 
 
 
