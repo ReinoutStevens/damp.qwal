@@ -164,7 +164,7 @@ Should detect loops by using tabled/slg resolution</pre>
   <pre id="var-usage">Usage: (qrpe graph start end bindings &amp; exps)
 </pre>
   <pre id="var-docstr">A macro on top of solve-qrpe that allows for nicer syntax.
-Graph holds the graph, and should at least understand :nodes
+Graph holds the graph, and should at least understand :nodes and :neighbors
 Start and end are unified with nodes in graph.
 Bindings are the new introduced variables that are kept throughout the pathexpression.
 Exps are the actual goals that should hold on the path through the graph.
@@ -179,9 +179,11 @@ Second variable is the next world, and goal must ground this.</pre>
   <hr />
   <h2 id="qrpe.core/solve-goal">solve-goal</h2>
   <span id="var-type">function</span><br />
-  <pre id="var-usage">Usage: (solve-goal goal curr next)
+  <pre id="var-usage">Usage: (solve-goal graph current next goal)
 </pre>
-  <pre id="var-docstr">calls goal with curr and next. curr is a grounded node. goal should ground next</pre>
+  <pre id="var-docstr">solves goal in the current world.
+Arguments to the goal are goal, current and next.
+Goal should ground next.</pre>
   
   
   
@@ -190,9 +192,9 @@ Second variable is the next world, and goal must ground this.</pre>
   <hr />
   <h2 id="qrpe.core/solve-goals">solve-goals</h2>
   <span id="var-type">function</span><br />
-  <pre id="var-usage">Usage: (solve-goals goals curr end)
+  <pre id="var-usage">Usage: (solve-goals graph curr end goals)
 </pre>
-  <pre id="var-docstr">goals is a list of goals. Each goal is a rule with two arguments, current and next world.
+  <pre id="var-docstr">goals is a list of goals.
 Each goal is called, passing the next version of the previous goal as the
 current version of the current goal</pre>
   
@@ -203,7 +205,7 @@ current version of the current goal</pre>
   <hr />
   <h2 id="qrpe.core/solve-qrpe">solve-qrpe</h2>
   <span id="var-type">function</span><br />
-  <pre id="var-usage">Usage: (solve-qrpe start end &amp; goals)
+  <pre id="var-usage">Usage: (solve-qrpe graph start end &amp; goals)
 </pre>
   <pre id="var-docstr">main rule that solves a qrpe</pre>
   
@@ -225,7 +227,7 @@ current version of the current goal</pre>
   <hr />
   <h2 id="qrpe.core/trans">trans</h2>
   <span id="var-type">function</span><br />
-  <pre id="var-usage">Usage: (trans node next)
+  <pre id="var-usage">Usage: (trans graph node next)
 </pre>
   <pre id="var-docstr">succeeds when next is a direct successor of node</pre>
   

@@ -14,7 +14,7 @@
    :wiki-url "/qrpe.core-api.html#qrpe.core/in-current",
    :doc "macro to evaluate a series of goals in the same world",
    :var-type "macro",
-   :line 184,
+   :line 183,
    :file "src/qrpe/core.clj"}
   {:arglists ([& goals]),
    :name "q*",
@@ -25,7 +25,7 @@
    :doc
    "goals may succeed zero to multiple times.\nShould detect loops by using tabled/slg resolution",
    :var-type "function",
-   :line 103,
+   :line 99,
    :file "src/qrpe/core.clj"}
   {:arglists ([& goals]),
    :name "q*=>",
@@ -35,7 +35,7 @@
    :wiki-url "/qrpe.core-api.html#qrpe.core/q*=>",
    :doc "see q* but also calls => at the end of goals",
    :var-type "function",
-   :line 118,
+   :line 114,
    :file "src/qrpe/core.clj"}
   {:arglists ([& goals]),
    :name "q+",
@@ -45,7 +45,7 @@
    :wiki-url "/qrpe.core-api.html#qrpe.core/q+",
    :doc "same as q*, except goals should succeed at least once",
    :var-type "function",
-   :line 124,
+   :line 120,
    :file "src/qrpe/core.clj"}
   {:arglists ([& goals]),
    :name "q+=>",
@@ -55,7 +55,7 @@
    :wiki-url "/qrpe.core-api.html#qrpe.core/q+=>",
    :doc "same as q+ but also calls => at the end of goals",
    :var-type "function",
-   :line 132,
+   :line 128,
    :file "src/qrpe/core.clj"}
   {:arglists ([& goals]),
    :name "q?",
@@ -65,7 +65,7 @@
    :wiki-url "/qrpe.core-api.html#qrpe.core/q?",
    :doc "goals may succeed or not",
    :var-type "function",
-   :line 138,
+   :line 134,
    :file "src/qrpe/core.clj"}
   {:arglists ([graph start end bindings & exps]),
    :name "qrpe",
@@ -74,33 +74,33 @@
    :raw-source-url nil,
    :wiki-url "/qrpe.core-api.html#qrpe.core/qrpe",
    :doc
-   "A macro on top of solve-qrpe that allows for nicer syntax.\nGraph holds the graph, and should at least understand :nodes\nStart and end are unified with nodes in graph.\nBindings are the new introduced variables that are kept throughout the pathexpression.\nExps are the actual goals that should hold on the path through the graph.\nEach goal should be a rule that takes 2 variables.\nFirst variable is the current world, and will be ground.\nSecond variable is the next world, and goal must ground this.",
+   "A macro on top of solve-qrpe that allows for nicer syntax.\nGraph holds the graph, and should at least understand :nodes and :neighbors\nStart and end are unified with nodes in graph.\nBindings are the new introduced variables that are kept throughout the pathexpression.\nExps are the actual goals that should hold on the path through the graph.\nEach goal should be a rule that takes 2 variables.\nFirst variable is the current world, and will be ground.\nSecond variable is the next world, and goal must ground this.",
    :var-type "macro",
-   :line 160,
+   :line 156,
    :file "src/qrpe/core.clj"}
-  {:arglists ([goal curr next]),
+  {:arglists ([graph current next goal]),
    :name "solve-goal",
    :namespace "qrpe.core",
    :source-url nil,
    :raw-source-url nil,
    :wiki-url "/qrpe.core-api.html#qrpe.core/solve-goal",
    :doc
-   "calls goal with curr and next. curr is a grounded node. goal should ground next",
+   "solves goal in the current world.\nArguments to the goal are goal, current and next.\nGoal should ground next.",
    :var-type "function",
-   :line 70,
+   :line 64,
    :file "src/qrpe/core.clj"}
-  {:arglists ([goals curr end]),
+  {:arglists ([graph curr end goals]),
    :name "solve-goals",
    :namespace "qrpe.core",
    :source-url nil,
    :raw-source-url nil,
    :wiki-url "/qrpe.core-api.html#qrpe.core/solve-goals",
    :doc
-   "goals is a list of goals. Each goal is a rule with two arguments, current and next world.\nEach goal is called, passing the next version of the previous goal as the\ncurrent version of the current goal",
+   "goals is a list of goals.\nEach goal is called, passing the next version of the previous goal as the\ncurrent version of the current goal",
    :var-type "function",
-   :line 76,
+   :line 72,
    :file "src/qrpe/core.clj"}
-  {:arglists ([start end & goals]),
+  {:arglists ([graph start end & goals]),
    :name "solve-qrpe",
    :namespace "qrpe.core",
    :source-url nil,
@@ -108,7 +108,7 @@
    :wiki-url "/qrpe.core-api.html#qrpe.core/solve-qrpe",
    :doc "main rule that solves a qrpe",
    :var-type "function",
-   :line 146,
+   :line 142,
    :file "src/qrpe/core.clj"}
   {:arglists ([node to]),
    :name "to-node",
@@ -119,9 +119,9 @@
    :doc
    "succeeds when to is the list of nodes that are direct successors of node",
    :var-type "function",
-   :line 46,
+   :line 27,
    :file "src/qrpe/core.clj"}
-  {:arglists ([node next]),
+  {:arglists ([graph node next]),
    :name "trans",
    :namespace "qrpe.core",
    :source-url nil,
@@ -129,7 +129,7 @@
    :wiki-url "/qrpe.core-api.html#qrpe.core/trans",
    :doc "succeeds when next is a direct successor of node",
    :var-type "function",
-   :line 61,
+   :line 55,
    :file "src/qrpe/core.clj"}
   {:arglists ([[current] & goals]),
    :name "with-current",
@@ -140,5 +140,5 @@
    :doc
    "macro that evaluates a series of goals in the current world. current is bound to the current world",
    :var-type "macro",
-   :line 192,
+   :line 191,
    :file "src/qrpe/core.clj"})}
