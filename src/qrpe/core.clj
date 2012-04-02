@@ -7,7 +7,6 @@
 
 (in-ns 'qrpe.core)
 
-
 (comment
 (defstruct directed-graph
   :nodes
@@ -15,6 +14,7 @@
 
 (defn make-graph [nodes neighborfn]
   (struct-map directed-graph :nodes nodes :neighbors neighborfn))
+)
 
 
 
@@ -114,7 +114,7 @@ Should detect loops by using tabled/slg resolution"}
 (defn
   ^{:doc "see q* but also calls => at the end of goals"}
   q*=> [& goals]
-  (apply q* (conj goals q=>))) 
+  (apply q* (conj goals q=>)))
      
 
 (defn
