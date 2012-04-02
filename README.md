@@ -36,14 +36,17 @@ Goals that want to stay in the current world can just unify next with current.
 
 
 The following goals are predefined:
+
 * `q=>` is a goal that transitions to one of the successors of the current node. 
 * `q<=` is a goal that transitions to one of the predecessors of the current node.
 
 The following macros that generate goals are predefined:
+
 * `(in-current & conditions)` returns a goal that succeeds when all the conditions succeed. It stays in the same world.
 * `(with-current [curr] & conditions)` is similar to `in-current`, except that `curr` is bound to the current world.
 
 The following functions are predefined that return goals:
+
 * `(q* & goals)` is a function that takes an arbitrary number of goals. These goals may succeed zero or multiple times.
 * `(q=>* & goqls)` is similar to `q*`, except that after calling goals `q=>` is called as well.
 * `(q+ & goals)` is similar to `q*`, except that the goals must succeed at least once.
@@ -91,6 +94,7 @@ We can describe the following path through the graph:
       (with-current [curr] (has-info curr info))))
 
 Note that there are many redundant goals in this expression.
+
 * The first goal tries to constantly prove that the current node has some info. QWAL detects the loop and stops executing this goal as it will not lead to more answers.
 * The second goal tries to match the longest path that contains the same info as the first node. The difference is the use of `q*=>` versus `q*`, so a transition will happen.
 * The third goal states that the current node must contain `:foo`. This means that the second goal consumes zero versions.
