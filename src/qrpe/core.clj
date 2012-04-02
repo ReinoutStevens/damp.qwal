@@ -3,8 +3,7 @@
       :author "Reinout Stevens"}
   qrpe.core
   (:refer-clojure :exclude [==])
-  (:use [clojure.core.logic])
-  (:require [clojure.walk]))
+  (:use [clojure.core.logic]))
 
 (in-ns 'qrpe.core)
 
@@ -16,24 +15,6 @@
 
 (defn make-graph [nodes neighborfn]
   (struct-map directed-graph :nodes nodes :neighbors neighborfn))
-
-(defn get-neighbors [graph node]
-  ((:neighbors graph) node))
-
-(def graph
-  (let [baz (ref {})
-        bar (ref {:info :bar, :to (list baz)})
-        foo (ref {:info :foo, :to (list bar)})
-        quux (ref {:info :quux, :to (list foo )})]
-    (dosync
-     (ref-set baz {:info :baz, :to (list quux)}))
-    (make-graph (list foo bar baz quux)
-                #(:to %1))))
-)
-
-
-(def graph
-  {:nodes (list :foo :bar :baz :quux)})
 
 
 
@@ -55,47 +36,62 @@
          [(== node :quux)
           (== to '(:foo))]))
 
+
+(def graph
+  {:nodes (list :foo :bar :baz :quux)
+   :neighbors to-node})
+
+
+(defn get-neighbors [graph node next]
+  ((:neighbors graph) node next))
+
 ;;;; QRPE
+;; Atm I am not sure whether adding quantifiers actually adds anything.
+;; The universal and existential quantifier are dual.
+;; Saying that an expression has to hold on all the paths between A and B
+;; is the same as finding a path between A and B where the exps does not hold.
           
 
 (defn
   ^{:doc "succeeds when next is a direct successor of node" }
-  trans [node next]
-  (fresh [to]
-         (to-node node to)
-         (membero next to)))
-
-
-
-(defn
-  ^{:doc "calls goal with curr and next. curr is a grounded node. goal should ground next"}
-  solve-goal [goal curr next]
-  (goal curr next))
+  trans [graph node next]
+  (fresh [nodes]
+         (project [node]
+                  (get-neighbors graph node nodes)
+                  (membero next nodes))))
 
 
 (defn
-  ^{:doc "goals is a list of goals. Each goal is a rule with two arguments, current and next world.
+  ^{:doc "solves goal in the current world.
+Arguments to the goal are goal, current and next.
+Goal should ground next."}
+  solve-goal [graph current next goal]
+  (goal graph current next))
+
+
+(defn
+  ^{:doc "goals is a list of goals.
 Each goal is called, passing the next version of the previous goal as the
 current version of the current goal" }
-  solve-goals [goals curr end]
+  solve-goals [graph curr end goals]
   (conde [(emptyo goals)
           (== curr end)]
          [(fresh [h t next]
                  (conso h t goals)
                  (project [ h t ]
-                          (solve-goal h curr next)
-                          (solve-goals t next end)))]))
+                          (solve-goal graph curr next h)
+                          (solve-goals graph next end t)))]))
 
 (defn q=>
   ^{:doc "fancier syntax for trans"}
-  [current next]
-  (trans current next))
+  [graph current next]
+  (trans graph current next))
 
 
 (defn q<=
   ^{:doc "reverse transition"}
-  [current previous]
-  (trans previous current))
+  [graph current previous]
+  (trans graph previous current))
 
 
 
@@ -105,14 +101,14 @@ current version of the current goal" }
 Should detect loops by using tabled/slg resolution"}
   q* [& goals]
   (def q*loop
-    (tabled [gs current end]
+    (tabled [graph current end goals]
             (conde
              [(fresh [next neext]
-                     (solve-goals gs current next)
-                     (q*loop gs neext end))]
+                     (solve-goals graph current next goals)
+                     (q*loop graph neext end goals))] ;;goals may succeed an arbitrary nr of times
              [(== current end)])))
-  (fn [current next]
-    (q*loop goals current next)))
+  (fn [graph current next]
+    (q*loop graph current next goals)))
 
 
 (defn
@@ -138,19 +134,19 @@ Should detect loops by using tabled/slg resolution"}
 (defn
   ^{:doc "goals may succeed or not"}
   q? [& goals]
-  (fn [curr next]
-    (conde [(solve-goals goals curr next)]
+  (fn [graph curr next]
+    (conde [(solve-goals graph curr next goals)]
            [(== curr next)])))
 
 
 (defn
   ^{:doc "main rule that solves a qrpe"}
-  solve-qrpe [start end & goals ]
+  solve-qrpe [graph start end & goals ]
   (conda  [(fresh [h t next]
                   (conso h t goals)
                   (project [h t]
-                           (solve-goal h start next)
-                           (apply solve-qrpe next end t)))]
+                           (solve-goal graph start next h)
+                           (apply solve-qrpe  graph next end t)))]
            [(== nil goals) ;; (emptyo goals) doesnt work for reasons unknown to the author
             (== start end)]))
 
@@ -159,7 +155,7 @@ Should detect loops by using tabled/slg resolution"}
 ;;Macros for nicer syntax, because sugar is good for you
 (defmacro
   ^{:doc "A macro on top of solve-qrpe that allows for nicer syntax.
-Graph holds the graph, and should at least understand :nodes
+Graph holds the graph, and should at least understand :nodes and :neighbors
 Start and end are unified with nodes in graph.
 Bindings are the new introduced variables that are kept throughout the pathexpression.
 Exps are the actual goals that should hold on the path through the graph.
@@ -168,17 +164,20 @@ First variable is the current world, and will be ground.
 Second variable is the next world, and goal must ground this." }
   qrpe [graph start end bindings & exps ]
   (let [genstart (gensym "start")
+        genend (gensym "end")
         graphvar (gensym "graph")]
     `(let [~graphvar ~graph]
        (fresh  ~bindings
-              (fresh [~genstart]
-                     (== ~start ~genstart)
-                     (membero ~genstart (:nodes ~graphvar))
-                     (solve-qrpe
-                      ~genstart
-                      ~end
-                      ~@exps))
-              (membero ~end (:nodes ~graphvar))))))
+               (fresh [~genstart ~genend]
+                      (== ~start ~genstart)
+                      (== ~end ~genend)
+                      (membero ~genstart (:nodes ~graphvar))
+                      (solve-qrpe
+                       ~graphvar
+                       ~genstart
+                       ~end
+                       ~@exps)
+                      (membero ~genend (:nodes ~graphvar)))))))
 
 
 (defmacro
@@ -192,8 +191,9 @@ Second variable is the next world, and goal must ground this." }
 (defmacro
   ^{:doc "macro that evaluates a series of goals in the current world. current is bound to the current world"}
   with-current [[current] & goals]
-  (let [next (gensym "next")]
-    `(fn [~current ~next]
+  (let [next (gensym "next")
+        graph (gensym "graph")]
+    `(fn [~graph ~current ~next]
        (all
         ~@goals
         (== ~current ~next)))))
@@ -204,12 +204,15 @@ Second variable is the next world, and goal must ground this." }
   "example usage"
   (run* [end]
         (qrpe graph (first (:nodes graph)) end
-              []
-              (q* (with-current [curr] (has-info curr :foo)))
+              [info]
+              (q* (with-current [curr] (has-info curr info)))
               (q*=> (with-current [curr] (fresh [info] (has-info curr info))))
               (with-current [curr] (has-info curr :foo))
               q=>
               (with-current [curr] (has-info curr :bar))
               q=>
-              (with-current [curr] (has-info curr :baz))))
+              (q? (with-current [curr] (has-info curr :foo)) =>)
+              (with-current [curr] (has-info curr :baz))
+              q=> q=>
+              (with-current [curr] (has-info curr info))))
 )
