@@ -1,5 +1,5 @@
-(ns qrpe.test.core
-  (:use [qrpe.core])
+(ns damp.qwal.test.qwal
+  (:use [damp.qwal.qwal])
   (:use [clojure.test]))
 
 (deftest replace-me ;; FIXME: write
