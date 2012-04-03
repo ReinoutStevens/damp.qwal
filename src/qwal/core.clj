@@ -1,11 +1,11 @@
 (ns
     ^{:doc "(Quantified) regular path expressions over graphlike structures"
       :author "Reinout Stevens"}
-  qrpe.core
+  damp.qwal.core
   (:refer-clojure :exclude [==])
   (:use [clojure.core.logic]))
 
-(in-ns 'qrpe.core)
+(in-ns 'damp.qwal.core)
 
 (comment
 (defstruct directed-graph
@@ -20,8 +20,9 @@
 
 
 (defn has-info [current info]
-  (conde [(project [current]
-                   (== current info))]))
+  (project [current]
+           (all
+            (== current info))))
     
 
 (defn
@@ -66,7 +67,8 @@
 Arguments to the goal are goal, current and next.
 Goal should ground next."}
   solve-goal [graph current next goal]
-  (goal graph current next))
+  (all
+   (goal graph current next)))
 
 
 (defn
@@ -212,7 +214,7 @@ Second variable is the next world, and goal must ground this." }
               q=>
               (with-current [curr] (has-info curr :bar))
               q=>
-              (q? (with-current [curr] (has-info curr :foo)) =>)
+              (q? (with-current [curr] (has-info curr :foo)) q=>)
               (with-current [curr] (has-info curr :baz))
               q=> q=>
               (with-current [curr] (has-info curr info))))
