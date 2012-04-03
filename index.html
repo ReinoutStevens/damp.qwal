@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>qrpe.core - QRPE API documentation</title>
+    <title>damp.qwal.core - QWAL API documentation</title>
     <link href="static/favicon.png" rel="icon" />
     <link href="static/favicon.png" rel="shortcut icon" />
     <link media="all" type="text/css" href="static/clojure.css" rel="stylesheet" />
@@ -22,12 +22,12 @@ namespace.
     <div id="AllContentContainer">
       <div id="Header">
 	<a id="Logo" href="index.html"><img alt="Clojure" height="100" width="100" src="static/clojure-icon.gif" /></a>
-	<h1><a title="page header title" id="page-header" href="index.html">Quantified Regular Path Expressions</a></h1>
+	<h1><a title="page header title" id="page-header" href="index.html">QWAL</a></h1>
       </div>
       <div id="leftcolumn"><div style="text-align: center;"></div>
 <div class="menu">
   <div class="WikiCustomNav WikiElement wiki">
-    <span class="toc-header"><span id="project-name">QRPE</span> <span id="version"></span> API</span><br />
+    <span class="toc-header"><span id="project-name">QWAL</span> <span id="version"></span> API</span><br />
     <ul>
       <li><a class="wiki_link" href="index.html">Overview</a></li>
       <li><a class="wiki_link" href="api-index.html">API Index</a></li>
@@ -47,41 +47,41 @@ namespace.
   <div style="margin-left: 1em;" class="toc-section">
     <a href="#toc0">Overview</a>
     <div style="margin-left: 1em;" class="toc-entry">
-      <a href="#qrpe.core/in-current">in-current</a>
+      <a href="#damp.qwal.core/in-current">in-current</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
-      <a href="#qrpe.core/q*">q*</a>
+      <a href="#damp.qwal.core/q*">q*</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
-      <a href="#qrpe.core/q*=&gt;">q*=&gt;</a>
+      <a href="#damp.qwal.core/q*=&gt;">q*=&gt;</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
-      <a href="#qrpe.core/q+">q+</a>
+      <a href="#damp.qwal.core/q+">q+</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
-      <a href="#qrpe.core/q+=&gt;">q+=&gt;</a>
+      <a href="#damp.qwal.core/q+=&gt;">q+=&gt;</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
-      <a href="#qrpe.core/q?">q?</a>
+      <a href="#damp.qwal.core/q?">q?</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
-      <a href="#qrpe.core/qrpe">qrpe</a>
+      <a href="#damp.qwal.core/qrpe">qrpe</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
-      <a href="#qrpe.core/solve-goal">solve-goal</a>
+      <a href="#damp.qwal.core/solve-goal">solve-goal</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
-      <a href="#qrpe.core/solve-goals">solve-goals</a>
+      <a href="#damp.qwal.core/solve-goals">solve-goals</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
-      <a href="#qrpe.core/solve-qrpe">solve-qrpe</a>
+      <a href="#damp.qwal.core/solve-qrpe">solve-qrpe</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
-      <a href="#qrpe.core/to-node">to-node</a>
+      <a href="#damp.qwal.core/to-node">to-node</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
-      <a href="#qrpe.core/trans">trans</a>
+      <a href="#damp.qwal.core/trans">trans</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
-      <a href="#qrpe.core/with-current">with-current</a>
+      <a href="#damp.qwal.core/with-current">with-current</a>
     </div>
     <br />
   </div>
 </div>
 </div>
-                <div id="content-tag"><h1 id="overview">API for <span id="namespace-name">qrpe.core</span>
-  - <span id="header-project">QRPE</span> <span id="header-version"></span>
+                <div id="content-tag"><h1 id="overview">API for <span id="namespace-name">damp.qwal.core</span>
+  - <span id="header-project">QWAL</span> <span id="header-version"></span>
   </h1>
 <span id="author-line">by <span id="author-name">Reinout Stevens</span><br /></span>
-<br />Full namespace name: <span id="long-name">qrpe.core</span>
+<br />Full namespace name: <span id="long-name">damp.qwal.core</span>
 <p></p>
 <h2>Overview</h2>
 <pre id="namespace-docstr">(Quantified) regular path expressions over graphlike structures</pre>
@@ -92,7 +92,7 @@ namespace.
 <div id="var-entry">
   <br />
   <hr />
-  <h2 id="qrpe.core/in-current">in-current</h2>
+  <h2 id="damp.qwal.core/in-current">in-current</h2>
   <span id="var-type">macro</span><br />
   <pre id="var-usage">Usage: (in-current &amp; goals)
 </pre>
@@ -103,7 +103,7 @@ namespace.
 </div><div id="var-entry">
   <br />
   <hr />
-  <h2 id="qrpe.core/q*">q*</h2>
+  <h2 id="damp.qwal.core/q*">q*</h2>
   <span id="var-type">function</span><br />
   <pre id="var-usage">Usage: (q* &amp; goals)
 </pre>
@@ -115,7 +115,7 @@ Should detect loops by using tabled/slg resolution</pre>
 </div><div id="var-entry">
   <br />
   <hr />
-  <h2 id="qrpe.core/q*=&gt;">q*=&gt;</h2>
+  <h2 id="damp.qwal.core/q*=&gt;">q*=&gt;</h2>
   <span id="var-type">function</span><br />
   <pre id="var-usage">Usage: (q*=&gt; &amp; goals)
 </pre>
@@ -126,7 +126,7 @@ Should detect loops by using tabled/slg resolution</pre>
 </div><div id="var-entry">
   <br />
   <hr />
-  <h2 id="qrpe.core/q+">q+</h2>
+  <h2 id="damp.qwal.core/q+">q+</h2>
   <span id="var-type">function</span><br />
   <pre id="var-usage">Usage: (q+ &amp; goals)
 </pre>
@@ -137,7 +137,7 @@ Should detect loops by using tabled/slg resolution</pre>
 </div><div id="var-entry">
   <br />
   <hr />
-  <h2 id="qrpe.core/q+=&gt;">q+=&gt;</h2>
+  <h2 id="damp.qwal.core/q+=&gt;">q+=&gt;</h2>
   <span id="var-type">function</span><br />
   <pre id="var-usage">Usage: (q+=&gt; &amp; goals)
 </pre>
@@ -148,7 +148,7 @@ Should detect loops by using tabled/slg resolution</pre>
 </div><div id="var-entry">
   <br />
   <hr />
-  <h2 id="qrpe.core/q?">q?</h2>
+  <h2 id="damp.qwal.core/q?">q?</h2>
   <span id="var-type">function</span><br />
   <pre id="var-usage">Usage: (q? &amp; goals)
 </pre>
@@ -159,7 +159,7 @@ Should detect loops by using tabled/slg resolution</pre>
 </div><div id="var-entry">
   <br />
   <hr />
-  <h2 id="qrpe.core/qrpe">qrpe</h2>
+  <h2 id="damp.qwal.core/qrpe">qrpe</h2>
   <span id="var-type">macro</span><br />
   <pre id="var-usage">Usage: (qrpe graph start end bindings &amp; exps)
 </pre>
@@ -177,7 +177,7 @@ Second variable is the next world, and goal must ground this.</pre>
 </div><div id="var-entry">
   <br />
   <hr />
-  <h2 id="qrpe.core/solve-goal">solve-goal</h2>
+  <h2 id="damp.qwal.core/solve-goal">solve-goal</h2>
   <span id="var-type">function</span><br />
   <pre id="var-usage">Usage: (solve-goal graph current next goal)
 </pre>
@@ -190,7 +190,7 @@ Goal should ground next.</pre>
 </div><div id="var-entry">
   <br />
   <hr />
-  <h2 id="qrpe.core/solve-goals">solve-goals</h2>
+  <h2 id="damp.qwal.core/solve-goals">solve-goals</h2>
   <span id="var-type">function</span><br />
   <pre id="var-usage">Usage: (solve-goals graph curr end goals)
 </pre>
@@ -203,7 +203,7 @@ current version of the current goal</pre>
 </div><div id="var-entry">
   <br />
   <hr />
-  <h2 id="qrpe.core/solve-qrpe">solve-qrpe</h2>
+  <h2 id="damp.qwal.core/solve-qrpe">solve-qrpe</h2>
   <span id="var-type">function</span><br />
   <pre id="var-usage">Usage: (solve-qrpe graph start end &amp; goals)
 </pre>
@@ -214,7 +214,7 @@ current version of the current goal</pre>
 </div><div id="var-entry">
   <br />
   <hr />
-  <h2 id="qrpe.core/to-node">to-node</h2>
+  <h2 id="damp.qwal.core/to-node">to-node</h2>
   <span id="var-type">function</span><br />
   <pre id="var-usage">Usage: (to-node node to)
 </pre>
@@ -225,7 +225,7 @@ current version of the current goal</pre>
 </div><div id="var-entry">
   <br />
   <hr />
-  <h2 id="qrpe.core/trans">trans</h2>
+  <h2 id="damp.qwal.core/trans">trans</h2>
   <span id="var-type">function</span><br />
   <pre id="var-usage">Usage: (trans graph node next)
 </pre>
@@ -236,7 +236,7 @@ current version of the current goal</pre>
 </div><div id="var-entry">
   <br />
   <hr />
-  <h2 id="qrpe.core/with-current">with-current</h2>
+  <h2 id="damp.qwal.core/with-current">with-current</h2>
   <span id="var-type">macro</span><br />
   <pre id="var-usage">Usage: (with-current [current] &amp; goals)
 </pre>
