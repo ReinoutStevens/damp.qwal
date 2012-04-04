@@ -51,15 +51,15 @@ namespace.
     </div><div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/q*">q*</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
-      <a href="#damp.qwal/q*=&gt;">q*=&gt;</a>
-    </div><div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/q+">q+</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
-      <a href="#damp.qwal/q+=&gt;">q+=&gt;</a>
+      <a href="#damp.qwal/q=&gt;*">q=&gt;*</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#damp.qwal/q=&gt;+">q=&gt;+</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/q?">q?</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
-      <a href="#damp.qwal/qrpe">qrpe</a>
+      <a href="#damp.qwal/qwal">qwal</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/rev-trans">rev-trans</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
@@ -115,17 +115,6 @@ Should detect loops by using tabled/slg resolution</pre>
 </div><div id="var-entry">
   <br />
   <hr />
-  <h2 id="damp.qwal/q*=&gt;">q*=&gt;</h2>
-  <span id="var-type">function</span><br />
-  <pre id="var-usage">Usage: (q*=&gt; &amp; goals)
-</pre>
-  <pre id="var-docstr">see q* but also calls =&gt; at the end of goals</pre>
-  
-  
-  
-</div><div id="var-entry">
-  <br />
-  <hr />
   <h2 id="damp.qwal/q+">q+</h2>
   <span id="var-type">function</span><br />
   <pre id="var-usage">Usage: (q+ &amp; goals)
@@ -137,9 +126,20 @@ Should detect loops by using tabled/slg resolution</pre>
 </div><div id="var-entry">
   <br />
   <hr />
-  <h2 id="damp.qwal/q+=&gt;">q+=&gt;</h2>
+  <h2 id="damp.qwal/q=&gt;*">q=&gt;*</h2>
   <span id="var-type">function</span><br />
-  <pre id="var-usage">Usage: (q+=&gt; &amp; goals)
+  <pre id="var-usage">Usage: (q=&gt;* &amp; goals)
+</pre>
+  <pre id="var-docstr">see q* but also calls =&gt; at the end of goals</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="damp.qwal/q=&gt;+">q=&gt;+</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (q=&gt;+ &amp; goals)
 </pre>
   <pre id="var-docstr">same as q+ but also calls =&gt; at the end of goals</pre>
   
@@ -159,9 +159,9 @@ Should detect loops by using tabled/slg resolution</pre>
 </div><div id="var-entry">
   <br />
   <hr />
-  <h2 id="damp.qwal/qrpe">qrpe</h2>
+  <h2 id="damp.qwal/qwal">qwal</h2>
   <span id="var-type">macro</span><br />
-  <pre id="var-usage">Usage: (qrpe graph start end bindings &amp; exps)
+  <pre id="var-usage">Usage: (qwal graph start end bindings &amp; exps)
 </pre>
   <pre id="var-docstr">A macro on top of solve-qrpe that allows for nicer syntax.
 Graph holds the graph, and should at least understand :nodes, :successors and :predecessors.
