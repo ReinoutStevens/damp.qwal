@@ -57,68 +57,98 @@ The following functions are predefined that return goals:
 
 
 ### Example
-We define the following graph:
+We have the following graph:
 
+    foo -> bar -> baz -> quux -> foo -> ...
+
+
+We can define it as follows:
+
+    (defn
+     ^{:doc "succeeds when to is the list of nodes that are direct successors of node" }
+     to-node [node to]
+     (conde [(== node :foo)
+             (== to '(:bar))]
+            [(== node :bar)
+             (== to '(:baz))]
+            [(== node :baz)
+             (== to '(:quux))]
+            [(== node :quux)
+             (== to '(:foo))]))
+
+    (defn
+     from-node [node from]
+     (conde [(== node :foo)
+             (== from '(:quux))]
+            [(== node :bar)
+             (== from '(:foo))]
+            [(== node :baz)
+             (== from '(:bar))]
+            [(== node :quux)
+             (== from '(:baz))]))
+  
+    (def graph
+     (let [nodes (list :foo :bar :baz :quux)]
+       {:nodes nodes
+        :successors to-node
+        :predecessors from-node}))
+
+    "helper function to verify that a node unifies with a symbol"
     (defn has-info [current info]
-    (project [current]
-             (all
-              (== current info))))
-  
-  (defn
-    ^{:doc "succeeds when to is the list of nodes that are direct successors of node" }
-    to-node [node to]
-    (conde [(== node :foo)
-            (== to '(:bar))]
-           [(== node :bar)
-            (== to '(:baz))]
-           [(== node :baz)
-            (== to '(:quux))]
-           [(== node :quux)
-            (== to '(:foo))]))
+      (project [current]
+        (all
+          (== current info))))
 
-  (defn
-    from-node [node from]
-    (conde [(== node :foo)
-            (== from '(:quux))]
-           [(== node :bar)
-            (== from '(:foo))]
-           [(== node :baz)
-            (== from '(:bar))]
-           [(== node :quux)
-            (== from '(:baz))]))
-  
-  (def graph
-    (let [nodes (list :foo :bar :baz :quux)]
-      {:nodes nodes
-       :successors to-node
-       :predecessors from-node}))
 
-We can describe the following path through the graph:
+We begin by simply describing the path `foo->bar->baz->quux` through
+the graph.
 
-    (run* [end]
-     (qrpe graph (first (:nodes graph)) end
-      [info]
-      (q* (with-current [curr] (has-info curr info)))
-      (q*=> (with-current [curr] (fresh [info] (has-info curr info))))
-      (with-current [curr] (has-info curr :foo))
-      q=>
-      (with-current [curr] (has-info curr :bar))
-      q=>
-      (q? (with-current [curr] (has-info curr :foo)) =>)
-      (with-current [curr] (has-info curr :baz))
-      q=> q=>
-      (with-current [curr] (has-info curr info))))
 
-Note that there are many redundant goals in this expression.
+    (let [start (first (:nodes graph))] ;;we start in foo
+      (run* [end] ;;we end in :quux
+        (qwal graph start end 
+          []
+          (with-current [curr] (has-info curr :foo))
+          q=>
+          (with-current [curr] (has-info curr :bar))
+          q=>
+          (with-current [curr] (has-info curr :baz))
+          q=>
+          (with-current [curr] (has-info curr :quux)))))
 
-* The first goal tries to constantly prove that the current node has some info. QWAL detects the loop and stops executing this goal as it will not lead to more answers.
-* The second goal tries to match the longest path that contains the same info as the first node. The difference is the use of `q*=>` versus `q*`, so a transition will happen.
-* The third goal states that the current node must contain `:foo`. This means that the second goal consumes zero versions.
-* The 4th goal transitions to the next version.
-* We then say there is a node that contains `:bar` and transition to the next version.
-* We then state that there may be a goal that contains `:foo`, and if the goals is present we transition to the next version.
-* We then state that there is a goal called `:baz`, and transition twice. We are now back in the start node (as there is a loop in the graph).
-* Finally we say that this node must contain the same info as the node we started in.
+
+This query illustrates the basic usage of qwal, but is not that
+interesting. A more interesting one is finding whether there is a loop
+in the graph.
+
+
+    (let [start (first (:nodes graph))]
+      (run* [end]
+        (qwal graph start end 
+          [info] ;;a variable that is shared across worlds/nodes
+          (q=>*) ;;skip (possibly 0) arbitrary number of worlds
+          (with-current [curr] (has-info curr info))
+          (q=>+) ;;skip (at least 1) arbitrary number of worlds
+          (with-current [curr] (has-info curr info)))))
+
+
+In this query we describe a path that starts in :foo. It skips an
+arbitrary number of worlds by using `(q=>*)`, and then binds `info` to
+the current node. This means that `info` will take all the values of
+reachable nodes from `:foo`. We have a loop if there is a possible
+path from the current world to the same world again. We specify this
+by taking one or more transitions from the current world, which is
+done using `(q=>+)`. Note that `(q=>*)` is incorrect here, as we could
+stay in the current world. Finally, we specify once again that the
+current world has the same info object, ensuring a loop.
+
+One of the important things to note from this example is that qwal
+detects loops, and prevents from going in an infinite computation that
+would not yield more results. This is done using the tabled resolution
+of core.logic.
+
+
+
 
 ## Licence
 GPL v3

@@ -7,42 +7,6 @@
 
 (in-ns 'damp.qwal)
 
-(comment
-  "constructing example graph with a loop"
-  (defn has-info [current info]
-    (project [current]
-             (all
-              (== current info))))
-  
-  (defn
-    ^{:doc "succeeds when to is the list of nodes that are direct successors of node" }
-    to-node [node to]
-    (conde [(== node :foo)
-            (== to '(:bar))]
-           [(== node :bar)
-            (== to '(:baz))]
-           [(== node :baz)
-            (== to '(:quux))]
-           [(== node :quux)
-            (== to '(:foo))]))
-
-  (defn
-    from-node [node from]
-    (conde [(== node :foo)
-            (== from '(:quux))]
-           [(== node :bar)
-            (== from '(:foo))]
-           [(== node :baz)
-            (== from '(:bar))]
-           [(== node :quux)
-            (== from '(:baz))]))
-  
-  (def graph
-    (let [nodes (list :foo :bar :baz :quux)]
-      {:nodes nodes
-       :successors to-node
-       :predecessors from-node})))
-
 
 (defn get-successors [graph node next]
   ((:successors graph) node next))
@@ -130,21 +94,21 @@ Should detect loops by using tabled/slg resolution"}
 
 (defn
   ^{:doc "see q* but also calls => at the end of goals"}
-  q*=> [& goals]
+  q=>* [& goals]
   (apply q* (concat goals [q=>])))
      
 
 (defn
   ^{:doc "same as q*, except goals should succeed at least once"}
   q+ [& goals]
-  (fn [current end]
+  (fn [graph current end]
     (fresh [next]
-           (solve-goals goals current next)
-           ((apply q* goals) next end))))
+           (solve-goals graph current next goals)
+           ((apply q* goals) graph next end))))
 
 (defn
   ^{:doc "same as q+ but also calls => at the end of goals"}
-  q+=> [& goals]
+  q=>+ [& goals]
   (apply q+ (concat goals [q=>])))
 
 
@@ -181,7 +145,7 @@ Exps are the actual goals that should hold on the path through the graph.
 Each goal should be a rule that takes 2 variables.
 First variable is the current world, and will be ground.
 Second variable is the next world, and goal must ground this." }
-  qrpe [graph start end bindings & exps ]
+  qwal [graph start end bindings & exps ]
   (let [genstart (gensym "start")
         genend (gensym "end")
         graphvar (gensym "graph")]
@@ -220,8 +184,44 @@ Second variable is the next world, and goal must ground this." }
 
 (comment
   "example usage"
+
+  "constructing example graph with a loop"
+  (defn has-info [current info]
+    (project [current]
+             (all
+              (== current info))))
+  
+  (defn
+    ^{:doc "succeeds when to is the list of nodes that are direct successors of node" }
+    to-node [node to]
+    (conde [(== node :foo)
+            (== to '(:bar))]
+           [(== node :bar)
+            (== to '(:baz))]
+           [(== node :baz)
+            (== to '(:quux))]
+           [(== node :quux)
+            (== to '(:foo))]))
+
+  (defn
+    from-node [node from]
+    (conde [(== node :foo)
+            (== from '(:quux))]
+           [(== node :bar)
+            (== from '(:foo))]
+           [(== node :baz)
+            (== from '(:bar))]
+           [(== node :quux)
+            (== from '(:baz))]))
+  
+  (def graph
+    (let [nodes (list :foo :bar :baz :quux)]
+      {:nodes nodes
+       :successors to-node
+       :predecessors from-node}))
+
   (run* [end]
-        (qrpe graph (first (:nodes graph)) end
+      (qwal graph (first (:nodes graph)) end
               [info]
               (q*=>)
               (q*=> (with-current [curr] succeed))
