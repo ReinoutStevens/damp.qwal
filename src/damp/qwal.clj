@@ -1,50 +1,54 @@
 (ns
     ^{:doc "(Quantified) regular path expressions over graphlike structures"
       :author "Reinout Stevens"}
-  damp.qwal.core
+  damp.qwal
   (:refer-clojure :exclude [==])
   (:use [clojure.core.logic]))
 
-(in-ns 'damp.qwal.core)
+(in-ns 'damp.qwal)
 
 (comment
-(defstruct directed-graph
-  :nodes
-  :neighbors)
+  "constructing example graph with a loop"
+  (defn has-info [current info]
+    (project [current]
+             (all
+              (== current info))))
+  
+  (defn
+    ^{:doc "succeeds when to is the list of nodes that are direct successors of node" }
+    to-node [node to]
+    (conde [(== node :foo)
+            (== to '(:bar))]
+           [(== node :bar)
+            (== to '(:baz))]
+           [(== node :baz)
+            (== to '(:quux))]
+           [(== node :quux)
+            (== to '(:foo))]))
 
-(defn make-graph [nodes neighborfn]
-  (struct-map directed-graph :nodes nodes :neighbors neighborfn))
-)
+  (defn
+    from-node [node from]
+    (conde [(== node :foo)
+            (== from '(:quux))]
+           [(== node :bar)
+            (== from '(:foo))]
+           [(== node :baz)
+            (== from '(:bar))]
+           [(== node :quux)
+            (== from '(:baz))]))
+  
+  (def graph
+    (let [nodes (list :foo :bar :baz :quux)]
+      {:nodes nodes
+       :successors to-node
+       :predecessors from-node}))
 
 
+(defn get-successors [graph node next]
+  ((:successors graph) node next))
 
-
-(defn has-info [current info]
-  (project [current]
-           (all
-            (== current info))))
-    
-
-(defn
-  ^{:doc "succeeds when to is the list of nodes that are direct successors of node" }
-  to-node [node to]
-  (conda [(== node :foo)
-          (== to '(:bar))]
-         [(== node :bar)
-          (== to '(:baz))]
-         [(== node :baz)
-          (== to '(:quux))]
-         [(== node :quux)
-          (== to '(:foo))]))
-
-
-(def graph
-  {:nodes (list :foo :bar :baz :quux)
-   :neighbors to-node})
-
-
-(defn get-neighbors [graph node next]
-  ((:neighbors graph) node next))
+(defn get-predecessors [graph node pred]
+  ((:predecessors graph) node pred))
 
 ;;;; QRPE
 ;; Atm I am not sure whether adding quantifiers actually adds anything.
@@ -58,8 +62,16 @@
   trans [graph node next]
   (fresh [nodes]
          (project [node]
-                  (get-neighbors graph node nodes)
+                  (get-successors graph node nodes)
                   (membero next nodes))))
+
+(defn
+  ^{:doc "succeeds when previous is a direct predecessor of node" }
+  rev-trans [graph node previous]
+  (fresh [nodes]
+         (project [node]
+                  (get-predecessors graph node nodes)
+                  (membero previous nodes))))
 
 
 (defn
@@ -87,15 +99,15 @@ current version of the current goal" }
 (defn q=>
   ^{:doc "fancier syntax for trans"}
   [graph current next]
-  (trans graph current next))
+  (all
+   (trans graph current next)))
 
 
 (defn q<=
   ^{:doc "reverse transition"}
   [graph current previous]
-  (conde [(membero previous (:nodes graph))
-          (trans graph previous current)]))
-
+  (all
+   (rev-trans graph current previous)))
 
 
 
@@ -104,20 +116,22 @@ current version of the current goal" }
 Should detect loops by using tabled/slg resolution"}
   q* [& goals]
   (def q*loop
-    (tabled [graph current end goals]
-            (conde
-             [(fresh [next neext]
-                     (solve-goals graph current next goals)
-                     (q*loop graph neext end goals))] ;;goals may succeed an arbitrary nr of times
-             [(== current end)])))
+    (tabled
+     [graph current end goals]
+     (conde
+      [(fresh [next]
+              (solve-goals graph current next goals)
+              (q*loop graph next end goals))] ;;goals may succeed an arbitrary nr of times
+      [(== current end)])))
   (fn [graph current next]
-    (q*loop graph current next goals)))
+    (all
+     (q*loop graph current next goals))))
 
 
 (defn
   ^{:doc "see q* but also calls => at the end of goals"}
   q*=> [& goals]
-  (apply q* (conj goals q=>)))
+  (apply q* (concat goals [q=>])))
      
 
 (defn
@@ -131,7 +145,7 @@ Should detect loops by using tabled/slg resolution"}
 (defn
   ^{:doc "same as q+ but also calls => at the end of goals"}
   q+=> [& goals]
-  (apply q+ (conj goals q=>)))
+  (apply q+ (concat goals [q=>])))
 
 
 (defn
@@ -145,7 +159,8 @@ Should detect loops by using tabled/slg resolution"}
 (defn
   ^{:doc "main rule that solves a qrpe"}
   solve-qrpe [graph start end & goals ]
-  (conda  [(fresh [h t next]
+  (conde  [(fresh [h t next]
+                  (!= nil goals)
                   (conso h t goals)
                   (project [h t]
                            (solve-goal graph start next h)
@@ -158,8 +173,9 @@ Should detect loops by using tabled/slg resolution"}
 ;;Macros for nicer syntax, because sugar is good for you
 (defmacro
   ^{:doc "A macro on top of solve-qrpe that allows for nicer syntax.
-Graph holds the graph, and should at least understand :nodes and :neighbors
-Start and end are unified with nodes in graph.
+Graph holds the graph, and should at least understand :nodes, :successors and :predecessors.
+Start node must be a member of the graph.
+End node is assumed to be a member of the graph.
 Bindings are the new introduced variables that are kept throughout the pathexpression.
 Exps are the actual goals that should hold on the path through the graph.
 Each goal should be a rule that takes 2 variables.
@@ -178,9 +194,8 @@ Second variable is the next world, and goal must ground this." }
                       (solve-qrpe
                        ~graphvar
                        ~genstart
-                       ~end
-                       ~@exps)
-                      (membero ~genend (:nodes ~graphvar)))))))
+                       ~genend
+                       ~@exps))))))
 
 
 (defmacro
@@ -208,7 +223,8 @@ Second variable is the next world, and goal must ground this." }
   (run* [end]
         (qrpe graph (first (:nodes graph)) end
               [info]
-              (q* (with-current [curr] (has-info curr info)))
+              (q*=>)
+              (q*=> (with-current [curr] succeed))
               (q*=> (with-current [curr] (fresh [info] (has-info curr info))))
               (with-current [curr] (has-info curr :foo))
               q=>

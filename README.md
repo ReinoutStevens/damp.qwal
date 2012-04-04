@@ -16,9 +16,12 @@ The main function is qrpe, which stands for quantified regular path expression (
 The function has the following signature:
     (qrpe graph start end bindings & goals)
 
-* `graph` is the graph we are querying, and should at least understand the method `:nodes` and `:neighbors`.
+* `graph` is the graph we are querying, and should at least understand the method `:nodes`, `:successors` and `:predecessors`.
     * `(:nodes graph)` returns a collection of all the nodes in the graph
-    * `(:neighbors graph)` returns a rule that takes two variables. It binds the second variable to the list of nodes connected with the first variable.
+    * `(:successors graph)` returns a rule that takes two variables. It binds the second variable to the list of nodes connected with the first variable.
+    * `(:predecessors graph)` returns a rule that takes two variables. It binds
+      the second variable to the list of nodes that can directly reach the
+      first variable.
 * `start` is the start node of the path, and must be a member of the nodes of the graph.
 * `end` is the end node of the path, and must be a member of the nodes of the graph.
 * `bindings` is a vector with bindings that need to be available throughout the whole expression.
@@ -57,24 +60,38 @@ The following functions are predefined that return goals:
 We define the following graph:
 
     (defn has-info [current info]
-     (conde [(project [current]
-              (== current info))]))
-    
-    (defn
-     ^{:doc "succeeds when to is the list of nodes that are direct successors of node" }
-     to-node [node to]
-     (conda [(== node :foo)
-      (== to '(:bar))]
-      [(== node :bar)
-      (== to '(:baz))]
-      [(== node :baz)
-      (== to '(:quux))]
-      [(== node :quux)
-      (== to '(:foo))]))
+    (project [current]
+             (all
+              (== current info))))
+  
+  (defn
+    ^{:doc "succeeds when to is the list of nodes that are direct successors of node" }
+    to-node [node to]
+    (conde [(== node :foo)
+            (== to '(:bar))]
+           [(== node :bar)
+            (== to '(:baz))]
+           [(== node :baz)
+            (== to '(:quux))]
+           [(== node :quux)
+            (== to '(:foo))]))
 
-    (def graph
-     {:nodes (list :foo :bar :baz :quux)
-     :neighbors to-node})
+  (defn
+    from-node [node from]
+    (conde [(== node :foo)
+            (== from '(:quux))]
+           [(== node :bar)
+            (== from '(:foo))]
+           [(== node :baz)
+            (== from '(:bar))]
+           [(== node :quux)
+            (== from '(:baz))]))
+  
+  (def graph
+    (let [nodes (list :foo :bar :baz :quux)]
+      {:nodes nodes
+       :successors to-node
+       :predecessors from-node}))
 
 We can describe the following path through the graph:
 
