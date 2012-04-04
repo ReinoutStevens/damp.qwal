@@ -41,7 +41,7 @@
     (let [nodes (list :foo :bar :baz :quux)]
       {:nodes nodes
        :successors to-node
-       :predecessors from-node}))
+       :predecessors from-node})))
 
 
 (defn get-successors [graph node next]
