@@ -151,4 +151,6 @@ of core.logic.
 
 
 ## Licence
-GPL v3
+Copyright (C) 2012 Reinout Stevens
+
+Distributed under the Eclipse Public License, the same as Clojure.
