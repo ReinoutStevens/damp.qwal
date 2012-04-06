@@ -53,6 +53,10 @@ namespace.
     </div><div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/q+">q+</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#damp.qwal/q&lt;=*">q&lt;=*</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#damp.qwal/q&lt;=+">q&lt;=+</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/q=&gt;*">q=&gt;*</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/q=&gt;+">q=&gt;+</a>
@@ -126,11 +130,33 @@ Should detect loops by using tabled/slg resolution</pre>
 </div><div id="var-entry">
   <br />
   <hr />
+  <h2 id="damp.qwal/q&lt;=*">q&lt;=*</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (q&lt;=* &amp; goals)
+</pre>
+  <pre id="var-docstr">see q*, but also calls q&lt;= at the end of goals</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="damp.qwal/q&lt;=+">q&lt;=+</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (q&lt;=+ &amp; goals)
+</pre>
+  <pre id="var-docstr">see q+, but also calls q&lt;= at the end of goals</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
   <h2 id="damp.qwal/q=&gt;*">q=&gt;*</h2>
   <span id="var-type">function</span><br />
   <pre id="var-usage">Usage: (q=&gt;* &amp; goals)
 </pre>
-  <pre id="var-docstr">see q* but also calls =&gt; at the end of goals</pre>
+  <pre id="var-docstr">see q*, but also calls q=&gt; at the end of goals</pre>
   
   
   
@@ -141,7 +167,7 @@ Should detect loops by using tabled/slg resolution</pre>
   <span id="var-type">function</span><br />
   <pre id="var-usage">Usage: (q=&gt;+ &amp; goals)
 </pre>
-  <pre id="var-docstr">same as q+ but also calls =&gt; at the end of goals</pre>
+  <pre id="var-docstr">see q+, but also calls q=&gt; at the end of goals</pre>
   
   
   

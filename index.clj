@@ -14,7 +14,7 @@
    :wiki-url "/damp.qwal-api.html#damp.qwal/in-current",
    :doc "macro to evaluate a series of goals in the same world",
    :var-type "macro",
-   :line 165,
+   :line 177,
    :file "src/damp/qwal.clj"}
   {:arglists ([& goals]),
    :name "q*",
@@ -35,7 +35,27 @@
    :wiki-url "/damp.qwal-api.html#damp.qwal/q+",
    :doc "same as q*, except goals should succeed at least once",
    :var-type "function",
+   :line 107,
+   :file "src/damp/qwal.clj"}
+  {:arglists ([& goals]),
+   :name "q<=*",
+   :namespace "damp.qwal",
+   :source-url nil,
+   :raw-source-url nil,
+   :wiki-url "/damp.qwal-api.html#damp.qwal/q<=*",
+   :doc "see q*, but also calls q<= at the end of goals",
+   :var-type "function",
    :line 101,
+   :file "src/damp/qwal.clj"}
+  {:arglists ([& goals]),
+   :name "q<=+",
+   :namespace "damp.qwal",
+   :source-url nil,
+   :raw-source-url nil,
+   :wiki-url "/damp.qwal-api.html#damp.qwal/q<=+",
+   :doc "see q+, but also calls q<= at the end of goals",
+   :var-type "function",
+   :line 121,
    :file "src/damp/qwal.clj"}
   {:arglists ([& goals]),
    :name "q=>*",
@@ -43,7 +63,7 @@
    :source-url nil,
    :raw-source-url nil,
    :wiki-url "/damp.qwal-api.html#damp.qwal/q=>*",
-   :doc "see q* but also calls => at the end of goals",
+   :doc "see q*, but also calls q=> at the end of goals",
    :var-type "function",
    :line 95,
    :file "src/damp/qwal.clj"}
@@ -53,9 +73,9 @@
    :source-url nil,
    :raw-source-url nil,
    :wiki-url "/damp.qwal-api.html#damp.qwal/q=>+",
-   :doc "same as q+ but also calls => at the end of goals",
+   :doc "see q+, but also calls q=> at the end of goals",
    :var-type "function",
-   :line 109,
+   :line 115,
    :file "src/damp/qwal.clj"}
   {:arglists ([& goals]),
    :name "q?",
@@ -65,7 +85,7 @@
    :wiki-url "/damp.qwal-api.html#damp.qwal/q?",
    :doc "goals may succeed or not",
    :var-type "function",
-   :line 115,
+   :line 127,
    :file "src/damp/qwal.clj"}
   {:arglists ([graph start end bindings & exps]),
    :name "qwal",
@@ -76,7 +96,7 @@
    :doc
    "A macro on top of solve-qrpe that allows for nicer syntax.\nGraph holds the graph, and should at least understand :nodes, :successors and :predecessors.\nStart node must be a member of the graph.\nEnd node is assumed to be a member of the graph.\nBindings are the new introduced variables that are kept throughout the pathexpression.\nExps are the actual goals that should hold on the path through the graph.\nEach goal should be a rule that takes 2 variables.\nFirst variable is the current world, and will be ground.\nSecond variable is the next world, and goal must ground this.",
    :var-type "macro",
-   :line 138,
+   :line 150,
    :file "src/damp/qwal.clj"}
   {:arglists ([graph node previous]),
    :name "rev-trans",
@@ -118,7 +138,7 @@
    :wiki-url "/damp.qwal-api.html#damp.qwal/solve-qrpe",
    :doc "main rule that solves a qrpe",
    :var-type "function",
-   :line 123,
+   :line 135,
    :file "src/damp/qwal.clj"}
   {:arglists ([graph node next]),
    :name "trans",
@@ -139,5 +159,5 @@
    :doc
    "macro that evaluates a series of goals in the current world. current is bound to the current world",
    :var-type "macro",
-   :line 173,
+   :line 185,
    :file "src/damp/qwal.clj"})}
