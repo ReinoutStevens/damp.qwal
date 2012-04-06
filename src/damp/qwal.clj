@@ -93,9 +93,15 @@ Should detect loops by using tabled/slg resolution"}
 
 
 (defn
-  ^{:doc "see q* but also calls => at the end of goals"}
+  ^{:doc "see q*, but also calls q=> at the end of goals"}
   q=>* [& goals]
   (apply q* (concat goals [q=>])))
+
+
+(defn
+  ^{:doc "see q*, but also calls q<= at the end of goals"}
+  q<=* [& goals]
+  (apply q* (concat goals [q<=])))
      
 
 (defn
@@ -107,9 +113,15 @@ Should detect loops by using tabled/slg resolution"}
            ((apply q* goals) graph next end))))
 
 (defn
-  ^{:doc "same as q+ but also calls => at the end of goals"}
+  ^{:doc "see q+, but also calls q=> at the end of goals"}
   q=>+ [& goals]
   (apply q+ (concat goals [q=>])))
+
+
+(defn
+  ^{:doc "see q+, but also calls q<= at the end of goals"}
+  q<=+ [& goals]
+  (apply q+ (concat goals [q<=])))
 
 
 (defn
@@ -223,9 +235,9 @@ Second variable is the next world, and goal must ground this." }
   (run* [end]
       (qwal graph (first (:nodes graph)) end
               [info]
-              (q*=>)
-              (q*=> (with-current [curr] succeed))
-              (q*=> (with-current [curr] (fresh [info] (has-info curr info))))
+              (q=>*)
+              (q=>* (with-current [curr] succeed))
+              (q=>* (with-current [curr] (fresh [info] (has-info curr info))))
               (with-current [curr] (has-info curr :foo))
               q=>
               (with-current [curr] (has-info curr :bar))

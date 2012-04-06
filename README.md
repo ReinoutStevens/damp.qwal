@@ -51,8 +51,10 @@ The following functions are predefined that return goals:
 
 * `(q* & goals)` is a function that takes an arbitrary number of goals. These goals may succeed zero or multiple times.
 * `(q=>* & goqls)` is similar to `q*`, except that after calling goals `q=>` is called as well.
+* `(q<=* & goals)` is similar to `q*`, except that after calling goals `q<=` is called as well.
 * `(q+ & goals)` is similar to `q*`, except that the goals must succeed at least once.
 * `(q=>+ & goals)` is similar to `q=>*`, except that the goals must succeed at least once.
+* `(q<=+ & goals)` is similar to `q<=*`, except that the goals must succeed at least once.
 * `(q? & goals)` tries to succeed goals, or stays in the current world. 
 
 
@@ -132,7 +134,7 @@ in the graph.
           (with-current [curr] (has-info curr info)))))
 
 
-In this query we describe a path that starts in :foo. It skips an
+In this query we describe a path that starts in `:foo`. It skips an
 arbitrary number of worlds by using `(q=>*)`, and then binds `info` to
 the current node. This means that `info` will take all the values of
 reachable nodes from `:foo`. We have a loop if there is a possible
