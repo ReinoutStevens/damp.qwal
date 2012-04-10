@@ -46,6 +46,7 @@ The following macros that generate goals are predefined:
 
 * `(in-current & conditions)` returns a goal that succeeds when all the conditions succeed. It stays in the same world.
 * `(with-current [curr] & conditions)` is similar to `in-current`, except that `curr` is bound to the current world.
+* `(qwhile current [& conditions ] & goals) executes goals as long as conditions hold in current.
 
 The following functions are predefined that return goals:
 

@@ -132,6 +132,43 @@ Should detect loops by using tabled/slg resolution"}
            [(== curr next)])))
 
 
+
+(defmacro
+  ^{:doc "implementing naf using conda"}
+  qfail [goal]
+  `(conda
+    [~goal fail]
+    [succeed]))
+    
+
+
+(defmacro
+  ^{:doc "calls goals as long as conditions holds.
+current is bound to the current world and can thus be used in conditions.
+Note that when & goals doesn't go to a successor zero results are found."}
+  qwhile [current [& conditions] & goals]
+  (let [graphvar (gensym "graph")
+        nextvar (gensym "next")
+        endvar (gensym "end")
+        loopvar (gensym "qwhile-loop")
+        realgoals (if (nil? goals) '() goals)]
+    `(fn [~graphvar ~current ~endvar]
+       (def ~loopvar
+         (tabled [ ~graphvar ~current ~endvar ]
+                 (conde [~@conditions
+                         (fresh [~nextvar]
+                                ;;for reasons unknown this doesnt work when you just use ~realgoals
+                                (trace-lvars "fogel")
+                                (solve-goals ~graphvar ~current ~nextvar (list ~@realgoals))
+                                (trace-lvars "hallo" ~nextvar)
+                                (~loopvar ~graphvar ~nextvar ~endvar))]
+                        [(qfail
+                          (all
+                           ~@conditions))
+                         (== ~current ~endvar)])))
+       (~loopvar ~graphvar ~current ~endvar))))
+           
+
 (defn
   ^{:doc "main rule that solves a qrpe"}
   solve-qrpe [graph start end & goals ]
