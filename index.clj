@@ -14,7 +14,7 @@
    :wiki-url "/damp.qwal-api.html#damp.qwal/in-current",
    :doc "macro to evaluate a series of goals in the same world",
    :var-type "macro",
-   :line 177,
+   :line 214,
    :file "src/damp/qwal.clj"}
   {:arglists ([& goals]),
    :name "q*",
@@ -87,6 +87,16 @@
    :var-type "function",
    :line 127,
    :file "src/damp/qwal.clj"}
+  {:arglists ([goal]),
+   :name "qfail",
+   :namespace "damp.qwal",
+   :source-url nil,
+   :raw-source-url nil,
+   :wiki-url "/damp.qwal-api.html#damp.qwal/qfail",
+   :doc "implementing naf using conda",
+   :var-type "macro",
+   :line 136,
+   :file "src/damp/qwal.clj"}
   {:arglists ([graph start end bindings & exps]),
    :name "qwal",
    :namespace "damp.qwal",
@@ -96,7 +106,18 @@
    :doc
    "A macro on top of solve-qrpe that allows for nicer syntax.\nGraph holds the graph, and should at least understand :nodes, :successors and :predecessors.\nStart node must be a member of the graph.\nEnd node is assumed to be a member of the graph.\nBindings are the new introduced variables that are kept throughout the pathexpression.\nExps are the actual goals that should hold on the path through the graph.\nEach goal should be a rule that takes 2 variables.\nFirst variable is the current world, and will be ground.\nSecond variable is the next world, and goal must ground this.",
    :var-type "macro",
-   :line 150,
+   :line 187,
+   :file "src/damp/qwal.clj"}
+  {:arglists ([current [& conditions] & goals]),
+   :name "qwhile",
+   :namespace "damp.qwal",
+   :source-url nil,
+   :raw-source-url nil,
+   :wiki-url "/damp.qwal-api.html#damp.qwal/qwhile",
+   :doc
+   "calls goals as long as conditions holds.\ncurrent is bound to the current world and can thus be used in conditions.\nNote that when & goals doesn't go to a successor zero results are found.",
+   :var-type "macro",
+   :line 145,
    :file "src/damp/qwal.clj"}
   {:arglists ([graph node previous]),
    :name "rev-trans",
@@ -138,7 +159,7 @@
    :wiki-url "/damp.qwal-api.html#damp.qwal/solve-qrpe",
    :doc "main rule that solves a qrpe",
    :var-type "function",
-   :line 135,
+   :line 172,
    :file "src/damp/qwal.clj"}
   {:arglists ([graph node next]),
    :name "trans",
@@ -159,5 +180,5 @@
    :doc
    "macro that evaluates a series of goals in the current world. current is bound to the current world",
    :var-type "macro",
-   :line 185,
+   :line 222,
    :file "src/damp/qwal.clj"})}

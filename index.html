@@ -63,7 +63,11 @@ namespace.
     </div><div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/q?">q?</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#damp.qwal/qfail">qfail</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/qwal">qwal</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#damp.qwal/qwhile">qwhile</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/rev-trans">rev-trans</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
@@ -185,6 +189,17 @@ Should detect loops by using tabled/slg resolution</pre>
 </div><div id="var-entry">
   <br />
   <hr />
+  <h2 id="damp.qwal/qfail">qfail</h2>
+  <span id="var-type">macro</span><br />
+  <pre id="var-usage">Usage: (qfail goal)
+</pre>
+  <pre id="var-docstr">implementing naf using conda</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
   <h2 id="damp.qwal/qwal">qwal</h2>
   <span id="var-type">macro</span><br />
   <pre id="var-usage">Usage: (qwal graph start end bindings &amp; exps)
@@ -198,6 +213,19 @@ Exps are the actual goals that should hold on the path through the graph.
 Each goal should be a rule that takes 2 variables.
 First variable is the current world, and will be ground.
 Second variable is the next world, and goal must ground this.</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="damp.qwal/qwhile">qwhile</h2>
+  <span id="var-type">macro</span><br />
+  <pre id="var-usage">Usage: (qwhile current [&amp; conditions] &amp; goals)
+</pre>
+  <pre id="var-docstr">calls goals as long as conditions holds.
+current is bound to the current world and can thus be used in conditions.
+Note that when &amp; goals doesn't go to a successor zero results are found.</pre>
   
   
   
