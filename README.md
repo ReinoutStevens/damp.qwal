@@ -44,8 +44,8 @@ The following goals are predefined:
 
 The following macros that generate goals are predefined:
 
-* `(in-current & conditions)` returns a goal that succeeds when all the conditions succeed. It stays in the same world.
-* `(with-current [curr] & conditions)` is similar to `in-current`, except that `curr` is bound to the current world.
+* `(qin-current & conditions)` returns a goal that succeeds when all the conditions succeed. It stays in the same world.
+* `(qcurrent [curr] & conditions)` is similar to `qin-current`, except that `curr` is bound to the current world.
 * `(qwhile current [& conditions ] & goals) executes goals as long as conditions hold in current.
 
 The following functions are predefined that return goals:
@@ -111,13 +111,13 @@ the graph.
       (run* [end] ;;we end in :quux
         (qwal graph start end 
           []
-          (with-current [curr] (has-info curr :foo))
+          (qcurrent [curr] (has-info curr :foo))
           q=>
-          (with-current [curr] (has-info curr :bar))
+          (qcurrent [curr] (has-info curr :bar))
           q=>
-          (with-current [curr] (has-info curr :baz))
+          (qcurrent [curr] (has-info curr :baz))
           q=>
-          (with-current [curr] (has-info curr :quux)))))
+          (qcurrent [curr] (has-info curr :quux)))))
 
 
 This query illustrates the basic usage of qwal, but is not that
@@ -130,9 +130,9 @@ in the graph.
         (qwal graph start end 
           [info] ;;a variable that is shared across worlds/nodes
           (q=>*) ;;skip (possibly 0) arbitrary number of worlds
-          (with-current [curr] (has-info curr info))
+          (qcurrent [curr] (has-info curr info))
           (q=>+) ;;skip (at least 1) arbitrary number of worlds
-          (with-current [curr] (has-info curr info)))))
+          (qcurrent [curr] (has-info curr info)))))
 
 
 In this query we describe a path that starts in `:foo`. It skips an

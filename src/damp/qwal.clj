@@ -199,29 +199,30 @@ Second variable is the next world, and goal must ground this." }
         genend (gensym "end")
         graphvar (gensym "graph")]
     `(let [~graphvar ~graph]
-       (fresh  ~bindings
-               (fresh [~genstart ~genend]
-                      (== ~start ~genstart)
-                      (== ~end ~genend)
-                      (membero ~genstart (:nodes ~graphvar))
-                      (solve-qrpe
-                       ~graphvar
-                       ~genstart
-                       ~genend
-                       ~@exps))))))
+       (project [~graphvar]
+                (fresh  ~bindings
+                        (fresh [~genstart ~genend]
+                               (== ~start ~genstart)
+                               (== ~end ~genend)
+                               (membero ~genstart (:nodes ~graphvar))
+                               (solve-qrpe
+                                ~graphvar
+                                ~genstart
+                                ~genend
+                                ~@exps)))))))
 
 
 (defmacro
   ^{:doc "macro to evaluate a series of goals in the same world"}
-  in-current [& goals]
+  qin-current [& goals]
   (let [world (gensym "world")]
-    `(with-current [~world]
+    `(qcurrent [~world]
        ~@goals)))
                     
 
 (defmacro
   ^{:doc "macro that evaluates a series of goals in the current world. current is bound to the current world"}
-  with-current [[current] & goals]
+  qcurrent [[current] & goals]
   (let [next (gensym "next")
         graph (gensym "graph")]
     `(fn [~graph ~current ~next]
