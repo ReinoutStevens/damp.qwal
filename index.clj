@@ -7,16 +7,6 @@
    "(Quantified) regular path expressions over graphlike structures"}),
  :vars
  ({:arglists ([& goals]),
-   :name "in-current",
-   :namespace "damp.qwal",
-   :source-url nil,
-   :raw-source-url nil,
-   :wiki-url "/damp.qwal-api.html#damp.qwal/in-current",
-   :doc "macro to evaluate a series of goals in the same world",
-   :var-type "macro",
-   :line 214,
-   :file "src/damp/qwal.clj"}
-  {:arglists ([& goals]),
    :name "q*",
    :namespace "damp.qwal",
    :source-url nil,
@@ -87,6 +77,17 @@
    :var-type "function",
    :line 127,
    :file "src/damp/qwal.clj"}
+  {:arglists ([[current] & goals]),
+   :name "qcurrent",
+   :namespace "damp.qwal",
+   :source-url nil,
+   :raw-source-url nil,
+   :wiki-url "/damp.qwal-api.html#damp.qwal/qcurrent",
+   :doc
+   "macro that evaluates a series of goals in the current world. current is bound to the current world",
+   :var-type "macro",
+   :line 223,
+   :file "src/damp/qwal.clj"}
   {:arglists ([goal]),
    :name "qfail",
    :namespace "damp.qwal",
@@ -96,6 +97,16 @@
    :doc "implementing naf using conda",
    :var-type "macro",
    :line 136,
+   :file "src/damp/qwal.clj"}
+  {:arglists ([& goals]),
+   :name "qin-current",
+   :namespace "damp.qwal",
+   :source-url nil,
+   :raw-source-url nil,
+   :wiki-url "/damp.qwal-api.html#damp.qwal/qin-current",
+   :doc "macro to evaluate a series of goals in the same world",
+   :var-type "macro",
+   :line 215,
    :file "src/damp/qwal.clj"}
   {:arglists ([graph start end bindings & exps]),
    :name "qwal",
@@ -170,15 +181,4 @@
    :doc "succeeds when next is a direct successor of node",
    :var-type "function",
    :line 24,
-   :file "src/damp/qwal.clj"}
-  {:arglists ([[current] & goals]),
-   :name "with-current",
-   :namespace "damp.qwal",
-   :source-url nil,
-   :raw-source-url nil,
-   :wiki-url "/damp.qwal-api.html#damp.qwal/with-current",
-   :doc
-   "macro that evaluates a series of goals in the current world. current is bound to the current world",
-   :var-type "macro",
-   :line 222,
    :file "src/damp/qwal.clj"})}

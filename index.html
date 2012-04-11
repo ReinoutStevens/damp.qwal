@@ -47,8 +47,6 @@ namespace.
   <div style="margin-left: 1em;" class="toc-section">
     <a href="#toc0">Overview</a>
     <div style="margin-left: 1em;" class="toc-entry">
-      <a href="#damp.qwal/in-current">in-current</a>
-    </div><div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/q*">q*</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/q+">q+</a>
@@ -63,7 +61,11 @@ namespace.
     </div><div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/q?">q?</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#damp.qwal/qcurrent">qcurrent</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/qfail">qfail</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#damp.qwal/qin-current">qin-current</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/qwal">qwal</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
@@ -78,8 +80,6 @@ namespace.
       <a href="#damp.qwal/solve-qrpe">solve-qrpe</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/trans">trans</a>
-    </div><div style="margin-left: 1em;" class="toc-entry">
-      <a href="#damp.qwal/with-current">with-current</a>
     </div>
     <br />
   </div>
@@ -98,17 +98,6 @@ namespace.
 <br />
 <h2>Public Variables and Functions</h2>
 <div id="var-entry">
-  <br />
-  <hr />
-  <h2 id="damp.qwal/in-current">in-current</h2>
-  <span id="var-type">macro</span><br />
-  <pre id="var-usage">Usage: (in-current &amp; goals)
-</pre>
-  <pre id="var-docstr">macro to evaluate a series of goals in the same world</pre>
-  
-  
-  
-</div><div id="var-entry">
   <br />
   <hr />
   <h2 id="damp.qwal/q*">q*</h2>
@@ -189,11 +178,33 @@ Should detect loops by using tabled/slg resolution</pre>
 </div><div id="var-entry">
   <br />
   <hr />
+  <h2 id="damp.qwal/qcurrent">qcurrent</h2>
+  <span id="var-type">macro</span><br />
+  <pre id="var-usage">Usage: (qcurrent [current] &amp; goals)
+</pre>
+  <pre id="var-docstr">macro that evaluates a series of goals in the current world. current is bound to the current world</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
   <h2 id="damp.qwal/qfail">qfail</h2>
   <span id="var-type">macro</span><br />
   <pre id="var-usage">Usage: (qfail goal)
 </pre>
   <pre id="var-docstr">implementing naf using conda</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="damp.qwal/qin-current">qin-current</h2>
+  <span id="var-type">macro</span><br />
+  <pre id="var-usage">Usage: (qin-current &amp; goals)
+</pre>
+  <pre id="var-docstr">macro to evaluate a series of goals in the same world</pre>
   
   
   
@@ -285,17 +296,6 @@ current version of the current goal</pre>
   <pre id="var-usage">Usage: (trans graph node next)
 </pre>
   <pre id="var-docstr">succeeds when next is a direct successor of node</pre>
-  
-  
-  
-</div><div id="var-entry">
-  <br />
-  <hr />
-  <h2 id="damp.qwal/with-current">with-current</h2>
-  <span id="var-type">macro</span><br />
-  <pre id="var-usage">Usage: (with-current [current] &amp; goals)
-</pre>
-  <pre id="var-docstr">macro that evaluates a series of goals in the current world. current is bound to the current world</pre>
   
   
   
