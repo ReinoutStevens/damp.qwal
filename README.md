@@ -51,7 +51,7 @@ The following macros that generate goals are predefined:
 The following functions are predefined that return goals:
 
 * `(q* & goals)` is a function that takes an arbitrary number of goals. These goals may succeed zero or multiple times.
-* `(q=>* & goqls)` is similar to `q*`, except that after calling goals `q=>` is called as well.
+* `(q=>* & goals)` is similar to `q*`, except that after calling goals `q=>` is called as well.
 * `(q<=* & goals)` is similar to `q*`, except that after calling goals `q<=` is called as well.
 * `(q+ & goals)` is similar to `q*`, except that the goals must succeed at least once.
 * `(q=>+ & goals)` is similar to `q=>*`, except that the goals must succeed at least once.
