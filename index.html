@@ -49,15 +49,27 @@ namespace.
     <div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/q*">q*</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#damp.qwal/q*?">q*?</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/q+">q+</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#damp.qwal/q+?">q+?</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/q&lt;=*">q&lt;=*</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/q&lt;=+">q&lt;=+</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#damp.qwal/q&lt;=+?">q&lt;=+?</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#damp.qwal/q&lt;=?">q&lt;=?</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/q=&gt;*">q=&gt;*</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#damp.qwal/q=&gt;*?">q=&gt;*?</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/q=&gt;+">q=&gt;+</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#damp.qwal/q=&gt;+?">q=&gt;+?</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/q?">q?</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
@@ -66,6 +78,8 @@ namespace.
       <a href="#damp.qwal/qfail">qfail</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/qin-current">qin-current</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#damp.qwal/quntil">quntil</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/qwal">qwal</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
@@ -105,7 +119,20 @@ namespace.
   <pre id="var-usage">Usage: (q* &amp; goals)
 </pre>
   <pre id="var-docstr">goals may succeed zero to multiple times.
-Should detect loops by using tabled/slg resolution</pre>
+Should detect loops by using tabled/slg resolution.
+q* is greedy, meaning it tries the longest path for which goals holds.
+see q*? for the reluctant variant.</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="damp.qwal/q*?">q*?</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (q*? &amp; goals)
+</pre>
+  <pre id="var-docstr">reluctant/non-greedy version of q*</pre>
   
   
   
@@ -117,6 +144,17 @@ Should detect loops by using tabled/slg resolution</pre>
   <pre id="var-usage">Usage: (q+ &amp; goals)
 </pre>
   <pre id="var-docstr">same as q*, except goals should succeed at least once</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="damp.qwal/q+?">q+?</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (q+? &amp; goals)
+</pre>
+  <pre id="var-docstr">same as q*?, except goals should succeed at least once</pre>
   
   
   
@@ -145,6 +183,28 @@ Should detect loops by using tabled/slg resolution</pre>
 </div><div id="var-entry">
   <br />
   <hr />
+  <h2 id="damp.qwal/q&lt;=+?">q&lt;=+?</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (q&lt;=+? &amp; goals)
+</pre>
+  <pre id="var-docstr">see q+?, but also calls q&lt;= at the end of goals</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="damp.qwal/q&lt;=?">q&lt;=?</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (q&lt;=? &amp; goals)
+</pre>
+  <pre id="var-docstr">see q*?, but also calls q&lt;= at the end of goals</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
   <h2 id="damp.qwal/q=&gt;*">q=&gt;*</h2>
   <span id="var-type">function</span><br />
   <pre id="var-usage">Usage: (q=&gt;* &amp; goals)
@@ -156,11 +216,33 @@ Should detect loops by using tabled/slg resolution</pre>
 </div><div id="var-entry">
   <br />
   <hr />
+  <h2 id="damp.qwal/q=&gt;*?">q=&gt;*?</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (q=&gt;*? &amp; goals)
+</pre>
+  <pre id="var-docstr">see q*?, but also calls q=&gt; at the end of goals</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
   <h2 id="damp.qwal/q=&gt;+">q=&gt;+</h2>
   <span id="var-type">function</span><br />
   <pre id="var-usage">Usage: (q=&gt;+ &amp; goals)
 </pre>
   <pre id="var-docstr">see q+, but also calls q=&gt; at the end of goals</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="damp.qwal/q=&gt;+?">q=&gt;+?</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (q=&gt;+? &amp; goals)
+</pre>
+  <pre id="var-docstr">see q+?, but also calls q=&gt; at the end of goals</pre>
   
   
   
@@ -211,6 +293,18 @@ Should detect loops by using tabled/slg resolution</pre>
 </div><div id="var-entry">
   <br />
   <hr />
+  <h2 id="damp.qwal/quntil">quntil</h2>
+  <span id="var-type">macro</span><br />
+  <pre id="var-usage">Usage: (quntil current [&amp; conditions] &amp; goals)
+</pre>
+  <pre id="var-docstr">reverse of qwhile.
+Goals are executed until conditions hold in current.</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
   <h2 id="damp.qwal/qwal">qwal</h2>
   <span id="var-type">macro</span><br />
   <pre id="var-usage">Usage: (qwal graph start end bindings &amp; exps)
@@ -235,7 +329,7 @@ Second variable is the next world, and goal must ground this.</pre>
   <pre id="var-usage">Usage: (qwhile current [&amp; conditions] &amp; goals)
 </pre>
   <pre id="var-docstr">calls goals as long as conditions holds.
-current is bound to the current world and can thus be used in conditions.
+Current is bound to the current world and can thus be used in conditions.
 Note that when &amp; goals doesn't go to a successor zero results are found.</pre>
   
   
