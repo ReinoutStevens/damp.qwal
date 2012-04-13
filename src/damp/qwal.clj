@@ -77,7 +77,9 @@ current version of the current goal" }
 
 (defn
   ^{:doc "goals may succeed zero to multiple times.
-Should detect loops by using tabled/slg resolution"}
+Should detect loops by using tabled/slg resolution.
+q* is greedy, meaning it tries the longest path for which goals holds.
+see q*? for the reluctant variant."}
   q* [& goals]
   (def q*loop
     (tabled
@@ -93,15 +95,42 @@ Should detect loops by using tabled/slg resolution"}
 
 
 (defn
+  ^{:doc "reluctant/non-greedy version of q*"}
+  q*? [& goals]
+  (def q*?loop
+    (tabled
+     [graph current end goals]
+     (conde
+      [(== current end)]
+      [(fresh [next]
+              (solve-goals graph current next goals)
+              (q*?loop graph next end goals))])))
+  (fn [graph current next]
+    (all
+     (q*?loop graph current next goals))))
+
+
+(defn
   ^{:doc "see q*, but also calls q=> at the end of goals"}
   q=>* [& goals]
   (apply q* (concat goals [q=>])))
 
 
 (defn
+  ^{:doc "see q*?, but also calls q=> at the end of goals"}
+  q=>*? [& goals]
+  (apply q*? (concat goals [q=>])))
+
+
+(defn
   ^{:doc "see q*, but also calls q<= at the end of goals"}
   q<=* [& goals]
   (apply q* (concat goals [q<=])))
+
+(defn
+  ^{:doc "see q*?, but also calls q<= at the end of goals"}
+  q<=? [& goals]
+  (apply q*? (concat goals [q<=])))
      
 
 (defn
@@ -112,10 +141,24 @@ Should detect loops by using tabled/slg resolution"}
            (solve-goals graph current next goals)
            ((apply q* goals) graph next end))))
 
+
+(defn
+  ^{:doc "same as q*?, except goals should succeed at least once"}
+  q+? [& goals]
+  (fn [graph current end]
+    (fresh [next]
+           (solve-goals graph current next goals)
+           ((apply q*? goals) graph next end))))
+
 (defn
   ^{:doc "see q+, but also calls q=> at the end of goals"}
   q=>+ [& goals]
   (apply q+ (concat goals [q=>])))
+
+(defn
+  ^{:doc "see q+?, but also calls q=> at the end of goals"}
+  q=>+? [& goals]
+  (apply q+? (concat goals [q=>])))
 
 
 (defn
@@ -123,6 +166,11 @@ Should detect loops by using tabled/slg resolution"}
   q<=+ [& goals]
   (apply q+ (concat goals [q<=])))
 
+(defn
+  ^{:doc "see q+?, but also calls q<= at the end of goals"}
+  q<=+? [& goals]
+  (apply q+? (concat goals [q<=])))
+  
 
 (defn
   ^{:doc "goals may succeed or not"}
@@ -138,13 +186,20 @@ Should detect loops by using tabled/slg resolution"}
   qfail [goal]
   `(conda
     [~goal fail]
-    [succeed]))
-    
+     [succeed]))
+
+
+(defmacro
+  ^{:doc "reverse of qwhile.
+Goals are executed until conditions hold in current."}
+  quntil [current [ & conditions ] & goals]
+  `(qwhile ~current [ (qfail (all ~@conditions)) ] ~@goals))
+
 
 
 (defmacro
   ^{:doc "calls goals as long as conditions holds.
-current is bound to the current world and can thus be used in conditions.
+Current is bound to the current world and can thus be used in conditions.
 Note that when & goals doesn't go to a successor zero results are found."}
   qwhile [current [& conditions] & goals]
   (let [graphvar (gensym "graph")
@@ -155,19 +210,16 @@ Note that when & goals doesn't go to a successor zero results are found."}
     `(fn [~graphvar ~current ~endvar]
        (def ~loopvar
          (tabled [ ~graphvar ~current ~endvar ]
-                 (conde [~@conditions
+                 (conda [~@conditions
                          (fresh [~nextvar]
                                 ;;for reasons unknown this doesnt work when you just use ~realgoals
-                                (trace-lvars "fogel")
                                 (solve-goals ~graphvar ~current ~nextvar (list ~@realgoals))
-                                (trace-lvars "hallo" ~nextvar)
                                 (~loopvar ~graphvar ~nextvar ~endvar))]
-                        [(qfail
-                          (all
-                           ~@conditions))
-                         (== ~current ~endvar)])))
+                        [(== ~current ~endvar)])))
        (~loopvar ~graphvar ~current ~endvar))))
-           
+
+
+
 
 (defn
   ^{:doc "main rule that solves a qrpe"}
@@ -224,11 +276,13 @@ Second variable is the next world, and goal must ground this." }
   ^{:doc "macro that evaluates a series of goals in the current world. current is bound to the current world"}
   qcurrent [[current] & goals]
   (let [next (gensym "next")
-        graph (gensym "graph")]
-    `(fn [~graph ~current ~next]
-       (all
-        ~@goals
-        (== ~current ~next)))))
+        graph (gensym "graph")
+        currvar (gensym "current")]
+    `(fn [~graph ~currvar ~next]
+       (fresh [~current]
+              (== ~currvar ~current)
+              ~@goals
+              (== ~current ~next)))))
 
 
 
@@ -274,14 +328,14 @@ Second variable is the next world, and goal must ground this." }
       (qwal graph (first (:nodes graph)) end
               [info]
               (q=>*)
-              (q=>* (with-current [curr] succeed))
-              (q=>* (with-current [curr] (fresh [info] (has-info curr info))))
-              (with-current [curr] (has-info curr :foo))
+              (q=>* (qcurrent [curr] succeed))
+              (q=>* (qcurrent [curr] (fresh [info] (has-info curr info))))
+              (qcurrent [curr] (has-info curr :foo))
               q=>
-              (with-current [curr] (has-info curr :bar))
+              (qcurrent [curr] (has-info curr :bar))
               q=>
               (q? (with-current [curr] (has-info curr :foo)) q=>)
-              (with-current [curr] (has-info curr :baz))
+              (qcurrent [curr] (has-info curr :baz))
               q=> q=>
-              (with-current [curr] (has-info curr info))))
+              (qcurrent [curr] (has-info curr info))))
 )
