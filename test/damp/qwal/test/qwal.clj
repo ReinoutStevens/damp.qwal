@@ -85,11 +85,19 @@
               q=>
               (current-has-info 10))))
 
+(defn logic-odd? [nr]
+  (all (== true (odd? nr))))
+
+(defn logic-even? [nr]
+  (all (== true (even? nr))))
+
+
+
 (defn greedy-many [graph]
   (run* [endstate]
         (qwal graph 1 endstate []
               (q=>* (qcurrent [curr]
-                              (membero curr (filter even? (range 1 11))))))))
+                              (logic-odd? curr))))))
 
 
 
@@ -97,14 +105,29 @@
   (run* [endstate]
         (qwal graph 1 endstate []
               (q=>*? (qcurrent [curr]
-                               (membero curr (filter even? (range 1 11))))))))
+                               (logic-odd? curr))))))
+
+
+(defn while-odd [graph]
+  (run* [endstate]
+        (qwal graph 1 endstate []
+              (qwhile curr [(logic-odd? curr)] q=>))))
+
+
+(defn until-even [graph]
+  (run* [endstate]
+        (qwal graph 1 endstate []
+              (quntil curr [(logic-even? curr)] q=>))))
+              
 
 (deftest basic-queries
-  (is (basic-walk graph) '(10))
-  (is (greedy-many graph) (reverse (cons 1 (filter even? (range 1 11)))))
-  (is (greedy-many cyclic-graph) (greedy-many graph))
-  (is (reluctant-many graph) (cons 1 (filter even? (range 1 11))))
-  (is (reluctant-many cyclic-graph) (reluctant-many graph)))
+  (is (= (basic-walk graph) '(10)))
+  (is (= (greedy-many graph) (reverse '(1 2 3 6 7 9 10))) "for reasons unknown greedy behaves as reluctant")
+  (is (= (greedy-many cyclic-graph) (greedy-many graph)))
+  (is (= (reluctant-many graph) '(1 2 3 6 7 9 10)))
+  (is (= (reluctant-many cyclic-graph) (reluctant-many graph)))
+  (is (= (while-odd graph) '(2 6 10)))
+  (is (= (until-even graph) '(2 6 10))))
 
 
 

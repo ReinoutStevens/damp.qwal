@@ -79,7 +79,8 @@ current version of the current goal" }
   ^{:doc "goals may succeed zero to multiple times.
 Should detect loops by using tabled/slg resolution.
 q* is greedy, meaning it tries the longest path for which goals holds.
-see q*? for the reluctant variant."}
+see q*? for the reluctant variant.
+BUG: currently greedy behaves just as the reluctant version, even though it should not."}
   q* [& goals]
   (def q*loop
     (tabled
@@ -210,12 +211,13 @@ Note that when & goals doesn't go to a successor zero results are found."}
     `(fn [~graphvar ~current ~endvar]
        (def ~loopvar
          (tabled [ ~graphvar ~current ~endvar ]
-                 (conda [~@conditions
-                         (fresh [~nextvar]
-                                ;;for reasons unknown this doesnt work when you just use ~realgoals
-                                (solve-goals ~graphvar ~current ~nextvar (list ~@realgoals))
-                                (~loopvar ~graphvar ~nextvar ~endvar))]
-                        [(== ~current ~endvar)])))
+                 (project [~current]
+                          (conda [~@conditions
+                                  (fresh [~nextvar]
+                                         ;;for reasons unknown this doesnt work when you just use ~realgoals
+                                         (solve-goals ~graphvar ~current ~nextvar (list ~@realgoals))
+                                         (~loopvar ~graphvar ~nextvar ~endvar))]
+                                 [(== ~current ~endvar)]))))
        (~loopvar ~graphvar ~current ~endvar))))
 
 
@@ -276,11 +278,9 @@ Second variable is the next world, and goal must ground this." }
   ^{:doc "macro that evaluates a series of goals in the current world. current is bound to the current world"}
   qcurrent [[current] & goals]
   (let [next (gensym "next")
-        graph (gensym "graph")
-        currvar (gensym "current")]
-    `(fn [~graph ~currvar ~next]
-       (fresh [~current]
-              (== ~currvar ~current)
+        graph (gensym "graph")]
+    `(fn [~graph ~current ~next]
+       (project [~current]
               ~@goals
               (== ~current ~next)))))
 
