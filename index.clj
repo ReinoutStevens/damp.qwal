@@ -13,7 +13,7 @@
    :raw-source-url nil,
    :wiki-url "/damp.qwal-api.html#damp.qwal/q*",
    :doc
-   "goals may succeed zero to multiple times.\nShould detect loops by using tabled/slg resolution.\nq* is greedy, meaning it tries the longest path for which goals holds.\nsee q*? for the reluctant variant.",
+   "goals may succeed zero to multiple times.\nShould detect loops by using tabled/slg resolution.\nq* is greedy, meaning it tries the longest path for which goals holds.\nsee q*? for the reluctant variant.\nBUG: currently greedy behaves just as the reluctant version, even though it should not.",
    :var-type "function",
    :line 78,
    :file "src/damp/qwal.clj"}
@@ -25,7 +25,7 @@
    :wiki-url "/damp.qwal-api.html#damp.qwal/q*?",
    :doc "reluctant/non-greedy version of q*",
    :var-type "function",
-   :line 97,
+   :line 98,
    :file "src/damp/qwal.clj"}
   {:arglists ([& goals]),
    :name "q+",
@@ -35,7 +35,7 @@
    :wiki-url "/damp.qwal-api.html#damp.qwal/q+",
    :doc "same as q*, except goals should succeed at least once",
    :var-type "function",
-   :line 136,
+   :line 137,
    :file "src/damp/qwal.clj"}
   {:arglists ([& goals]),
    :name "q+?",
@@ -45,7 +45,7 @@
    :wiki-url "/damp.qwal-api.html#damp.qwal/q+?",
    :doc "same as q*?, except goals should succeed at least once",
    :var-type "function",
-   :line 145,
+   :line 146,
    :file "src/damp/qwal.clj"}
   {:arglists ([& goals]),
    :name "q<=*",
@@ -55,7 +55,7 @@
    :wiki-url "/damp.qwal-api.html#damp.qwal/q<=*",
    :doc "see q*, but also calls q<= at the end of goals",
    :var-type "function",
-   :line 125,
+   :line 126,
    :file "src/damp/qwal.clj"}
   {:arglists ([& goals]),
    :name "q<=+",
@@ -65,7 +65,7 @@
    :wiki-url "/damp.qwal-api.html#damp.qwal/q<=+",
    :doc "see q+, but also calls q<= at the end of goals",
    :var-type "function",
-   :line 164,
+   :line 165,
    :file "src/damp/qwal.clj"}
   {:arglists ([& goals]),
    :name "q<=+?",
@@ -75,7 +75,7 @@
    :wiki-url "/damp.qwal-api.html#damp.qwal/q<=+?",
    :doc "see q+?, but also calls q<= at the end of goals",
    :var-type "function",
-   :line 169,
+   :line 170,
    :file "src/damp/qwal.clj"}
   {:arglists ([& goals]),
    :name "q<=?",
@@ -85,7 +85,7 @@
    :wiki-url "/damp.qwal-api.html#damp.qwal/q<=?",
    :doc "see q*?, but also calls q<= at the end of goals",
    :var-type "function",
-   :line 130,
+   :line 131,
    :file "src/damp/qwal.clj"}
   {:arglists ([& goals]),
    :name "q=>*",
@@ -95,7 +95,7 @@
    :wiki-url "/damp.qwal-api.html#damp.qwal/q=>*",
    :doc "see q*, but also calls q=> at the end of goals",
    :var-type "function",
-   :line 113,
+   :line 114,
    :file "src/damp/qwal.clj"}
   {:arglists ([& goals]),
    :name "q=>*?",
@@ -105,7 +105,7 @@
    :wiki-url "/damp.qwal-api.html#damp.qwal/q=>*?",
    :doc "see q*?, but also calls q=> at the end of goals",
    :var-type "function",
-   :line 119,
+   :line 120,
    :file "src/damp/qwal.clj"}
   {:arglists ([& goals]),
    :name "q=>+",
@@ -115,7 +115,7 @@
    :wiki-url "/damp.qwal-api.html#damp.qwal/q=>+",
    :doc "see q+, but also calls q=> at the end of goals",
    :var-type "function",
-   :line 153,
+   :line 154,
    :file "src/damp/qwal.clj"}
   {:arglists ([& goals]),
    :name "q=>+?",
@@ -125,7 +125,7 @@
    :wiki-url "/damp.qwal-api.html#damp.qwal/q=>+?",
    :doc "see q+?, but also calls q=> at the end of goals",
    :var-type "function",
-   :line 158,
+   :line 159,
    :file "src/damp/qwal.clj"}
   {:arglists ([& goals]),
    :name "q?",
@@ -135,7 +135,7 @@
    :wiki-url "/damp.qwal-api.html#damp.qwal/q?",
    :doc "goals may succeed or not",
    :var-type "function",
-   :line 175,
+   :line 176,
    :file "src/damp/qwal.clj"}
   {:arglists ([[current] & goals]),
    :name "qcurrent",
@@ -146,7 +146,7 @@
    :doc
    "macro that evaluates a series of goals in the current world. current is bound to the current world",
    :var-type "macro",
-   :line 275,
+   :line 277,
    :file "src/damp/qwal.clj"}
   {:arglists ([goal]),
    :name "qfail",
@@ -156,7 +156,7 @@
    :wiki-url "/damp.qwal-api.html#damp.qwal/qfail",
    :doc "implementing naf using conda",
    :var-type "macro",
-   :line 184,
+   :line 185,
    :file "src/damp/qwal.clj"}
   {:arglists ([& goals]),
    :name "qin-current",
@@ -166,7 +166,7 @@
    :wiki-url "/damp.qwal-api.html#damp.qwal/qin-current",
    :doc "macro to evaluate a series of goals in the same world",
    :var-type "macro",
-   :line 267,
+   :line 269,
    :file "src/damp/qwal.clj"}
   {:arglists ([current [& conditions] & goals]),
    :name "quntil",
@@ -177,7 +177,7 @@
    :doc
    "reverse of qwhile.\nGoals are executed until conditions hold in current.",
    :var-type "macro",
-   :line 192,
+   :line 193,
    :file "src/damp/qwal.clj"}
   {:arglists ([graph start end bindings & exps]),
    :name "qwal",
@@ -188,7 +188,7 @@
    :doc
    "A macro on top of solve-qrpe that allows for nicer syntax.\nGraph holds the graph, and should at least understand :nodes, :successors and :predecessors.\nStart node must be a member of the graph.\nEnd node is assumed to be a member of the graph.\nBindings are the new introduced variables that are kept throughout the pathexpression.\nExps are the actual goals that should hold on the path through the graph.\nEach goal should be a rule that takes 2 variables.\nFirst variable is the current world, and will be ground.\nSecond variable is the next world, and goal must ground this.",
    :var-type "macro",
-   :line 239,
+   :line 241,
    :file "src/damp/qwal.clj"}
   {:arglists ([current [& conditions] & goals]),
    :name "qwhile",
@@ -199,7 +199,7 @@
    :doc
    "calls goals as long as conditions holds.\nCurrent is bound to the current world and can thus be used in conditions.\nNote that when & goals doesn't go to a successor zero results are found.",
    :var-type "macro",
-   :line 200,
+   :line 201,
    :file "src/damp/qwal.clj"}
   {:arglists ([graph node previous]),
    :name "rev-trans",
@@ -241,7 +241,7 @@
    :wiki-url "/damp.qwal-api.html#damp.qwal/solve-qrpe",
    :doc "main rule that solves a qrpe",
    :var-type "function",
-   :line 224,
+   :line 226,
    :file "src/damp/qwal.clj"}
   {:arglists ([graph node next]),
    :name "trans",
