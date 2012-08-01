@@ -19,7 +19,7 @@
 ;; The universal and existential quantifier are dual.
 ;; Saying that an expression has to hold on all the paths between A and B
 ;; is the same as finding a path between A and B where the exps does not hold.
-          
+
 
 (defn
   ^{:doc "succeeds when next is a direct successor of node" }
@@ -39,12 +39,22 @@
 
 
 (defn
+  default-solve-goal [graph current next goal]
+  (all
+   (goal graph current next)))
+
+
+
+(defn
   ^{:doc "solves goal in the current world.
 Arguments to the goal are goal, current and next.
 Goal should ground next."}
   solve-goal [graph current next goal]
-  (all
-   (goal graph current next)))
+  (let [goal-solver (:goal-solver graph)]
+    (if goal-solver
+      (goal-solver graph current next goal)
+      (default-solve-goal graph current next goal))))
+
 
 
 (defn
@@ -56,7 +66,7 @@ current version of the current goal" }
           (== curr end)]
          [(fresh [h t next]
                  (conso h t goals)
-                 (project [ h t ]
+                 (project [ curr h t ]
                           (solve-goal graph curr next h)
                           (solve-goals graph next end t)))]))
 
@@ -132,7 +142,7 @@ BUG: currently greedy behaves just as the reluctant version, even though it shou
   ^{:doc "see q*?, but also calls q<= at the end of goals"}
   q<=? [& goals]
   (apply q*? (concat goals [q<=])))
-     
+
 
 (defn
   ^{:doc "same as q*, except goals should succeed at least once"}
@@ -171,7 +181,7 @@ BUG: currently greedy behaves just as the reluctant version, even though it shou
   ^{:doc "see q+?, but also calls q<= at the end of goals"}
   q<=+? [& goals]
   (apply q+? (concat goals [q<=])))
-  
+
 
 (defn
   ^{:doc "goals may succeed or not"}
@@ -187,7 +197,7 @@ BUG: currently greedy behaves just as the reluctant version, even though it shou
   qfail [goal]
   `(conda
     [~goal fail]
-     [succeed]))
+    [succeed]))
 
 
 (defmacro
@@ -229,11 +239,11 @@ Note that when & goals doesn't go to a successor zero results are found."}
   (conde  [(fresh [h t next]
                   (!= nil goals)
                   (conso h t goals)
-                  (project [h t]
+                  (project [start h t]
                            (solve-goal graph start next h)
                            (apply solve-qrpe  graph next end t)))]
-           [(== nil goals) ;; (emptyo goals) doesnt work for reasons unknown to the author
-            (== start end)]))
+          [(== nil goals) ;; (emptyo goals) doesnt work for reasons unknown to the author
+           (== start end)]))
 
 
 
@@ -271,8 +281,8 @@ Second variable is the next world, and goal must ground this." }
   qin-current [& goals]
   (let [world (gensym "world")]
     `(qcurrent [~world]
-       ~@goals)))
-                    
+               ~@goals)))
+
 
 (defmacro
   ^{:doc "macro that evaluates a series of goals in the current world. current is bound to the current world"}
@@ -281,8 +291,8 @@ Second variable is the next world, and goal must ground this." }
         graph (gensym "graph")]
     `(fn [~graph ~current ~next]
        (project [~current]
-              ~@goals
-              (== ~current ~next)))))
+                ~@goals
+                (== ~current ~next)))))
 
 
 
@@ -325,7 +335,7 @@ Second variable is the next world, and goal must ground this." }
        :predecessors from-node}))
 
   (run* [end]
-      (qwal graph (first (:nodes graph)) end
+        (qwal graph (first (:nodes graph)) end
               [info]
               (q=>*)
               (q=>* (qcurrent [curr] succeed))
@@ -334,8 +344,8 @@ Second variable is the next world, and goal must ground this." }
               q=>
               (qcurrent [curr] (has-info curr :bar))
               q=>
-              (q? (with-current [curr] (has-info curr :foo)) q=>)
+              (q? (qcurrent [curr] (has-info curr :foo)) q=>)
               (qcurrent [curr] (has-info curr :baz))
               q=> q=>
               (qcurrent [curr] (has-info curr info))))
-)
+  )
