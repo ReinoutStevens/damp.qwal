@@ -79,6 +79,12 @@ namespace.
     </div><div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/qin-current">qin-current</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#damp.qwal/qtimes">qtimes</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#damp.qwal/qtimes&lt;=">qtimes&lt;=</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#damp.qwal/qtimes=&gt;">qtimes=&gt;</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/quntil">quntil</a>
     </div><div style="margin-left: 1em;" class="toc-entry">
       <a href="#damp.qwal/qwal">qwal</a>
@@ -273,8 +279,8 @@ BUG: currently greedy behaves just as the reluctant version, even though it shou
   <br />
   <hr />
   <h2 id="damp.qwal/qfail">qfail</h2>
-  <span id="var-type">macro</span><br />
-  <pre id="var-usage">Usage: (qfail goal)
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (qfail &amp; goals)
 </pre>
   <pre id="var-docstr">implementing naf using conda</pre>
   
@@ -288,6 +294,39 @@ BUG: currently greedy behaves just as the reluctant version, even though it shou
   <pre id="var-usage">Usage: (qin-current &amp; goals)
 </pre>
   <pre id="var-docstr">macro to evaluate a series of goals in the same world</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="damp.qwal/qtimes">qtimes</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (qtimes [times] &amp; goals)
+</pre>
+  <pre id="var-docstr">goals has to succeed times times</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="damp.qwal/qtimes&lt;=">qtimes&lt;=</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (qtimes&lt;= [times] &amp; goals)
+</pre>
+  <pre id="var-docstr">see qtimes, but also calls q=&gt; at the end of goals</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="damp.qwal/qtimes=&gt;">qtimes=&gt;</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (qtimes=&gt; [times] &amp; goals)
+</pre>
+  <pre id="var-docstr">see qtimes, but also calls q=&gt; at the end of goals</pre>
   
   
   
