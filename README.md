@@ -56,7 +56,10 @@ The following functions are predefined that return goals:
 * `(q+ & goals)` is similar to `q*`, except that the goals must succeed at least once.
 * `(q=>+ & goals)` is similar to `q=>*`, except that the goals must succeed at least once.
 * `(q<=+ & goals)` is similar to `q<=*`, except that the goals must succeed at least once.
-* `(q? & goals)` tries to succeed goals, or stays in the current world. 
+* `(q? & goals)` tries to succeed goals, or stays in the current world.
+* `(qtimes [times] & goals) is a function that takes a variable or number, and an arbitrary number goals. These goals have to succeed exactle `times` times.
+* `(qtimes=> [times] & goals) is similar to `qtimes`, except that after calling goals `q=>` is called as well.
+* `(qtimes<= [times] & goals) is similar to `qtimes`, except that after calling goals `q<=` is called as well.
 
 
 ### Example

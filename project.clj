@@ -1,4 +1,4 @@
-(defproject qwal "1.0.0-SNAPSHOT"
+(defproject qwal "1.0.1-SNAPSHOT"
   :description "Pathexpressions over graphlike structures using core.logic"
   :dependencies [[org.clojure/clojure "1.3.0"]
                  [org.clojure/core.logic "0.7.0"]]

@@ -191,13 +191,54 @@ BUG: currently greedy behaves just as the reluctant version, even though it shou
            [(== curr next)])))
 
 
+;;one may argue about tabling this or not
+(defn
+  ^{:doc "goals has to succeed times times"}
+  qtimes [ [times] & goals]
+  (defn times-bound-loop [graph curr next number]
+    (fresh [neext]
+           (conde [(== number times)
+                   (== curr next)]
+                  [(== true (< number times))
+                   (solve-goals graph curr neext goals)
+                   (times-bound-loop graph neext next (inc number))])))
+  (defn times-unbound-loop [graph curr next number]
+    (fresh [neext]
+           (conde [(== number times)
+                   (== curr next)]
+                  [(solve-goals graph curr neext goals)
+                   (times-unbound-loop graph neext next (inc number))])))
+  (fn [graph curr next]
+    (project [times]
+             (if (lvar? times) ;;unbound
+               (times-unbound-loop graph curr next 0)
+               (times-bound-loop graph curr next 0)))))
 
-(defmacro
+(defn
+  ^{:doc "see qtimes, but also calls q=> at the end of goals"}
+  qtimes=> [ [times] & goals]
+  (apply qtimes [times]
+         (concat goals [q=>])))
+
+(defn
+^{:doc "see qtimes, but also calls q=> at the end of goals"}
+  qtimes<= [ [times] & goals]
+  (apply qtimes [times]
+         (concat goals [q<=])))
+  
+              
+    
+
+
+
+(defn
   ^{:doc "implementing naf using conda"}
-  qfail [goal]
-  `(conda
-    [~goal fail]
-    [succeed]))
+  qfail [& goals]
+  (fn [graph current next]
+    (conda
+     [(solve-goals graph current next goals)
+      fail]
+     [(== current next)])))
 
 
 (defmacro
@@ -294,8 +335,9 @@ Second variable is the next world, and goal must ground this." }
                 ~@goals
                 (== ~current ~next)))))
 
-
-
+           
+      
+    
 (comment
   "example usage"
 
@@ -313,7 +355,7 @@ Second variable is the next world, and goal must ground this." }
            [(== node :bar)
             (== to '(:baz))]
            [(== node :baz)
-            (== to '(:quux))]
+            (== to '(:quux :coen))]
            [(== node :quux)
             (== to '(:foo))]))
 
@@ -325,6 +367,8 @@ Second variable is the next world, and goal must ground this." }
             (== from '(:foo))]
            [(== node :baz)
             (== from '(:bar))]
+           [(== node :coen)
+            (== from '(:baz))]
            [(== node :quux)
             (== from '(:baz))]))
   
