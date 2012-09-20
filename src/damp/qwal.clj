@@ -194,7 +194,7 @@ BUG: currently greedy behaves just as the reluctant version, even though it shou
 ;;one may argue about tabling this or not
 (defn
   ^{:doc "goals has to succeed times times"}
-  qtimes [ [times] & goals]
+  qtimes [times & goals]
   (defn times-bound-loop [graph curr next number]
     (fresh [neext]
            (conde [(== number times)
@@ -216,14 +216,14 @@ BUG: currently greedy behaves just as the reluctant version, even though it shou
 
 (defn
   ^{:doc "see qtimes, but also calls q=> at the end of goals"}
-  qtimes=> [ [times] & goals]
-  (apply qtimes [times]
+  qtimes=> [times & goals]
+  (apply qtimes times
          (concat goals [q=>])))
 
 (defn
 ^{:doc "see qtimes, but also calls q=> at the end of goals"}
-  qtimes<= [ [times] & goals]
-  (apply qtimes [times]
+  qtimes<= [times & goals]
+  (apply qtimes times
          (concat goals [q<=])))
   
               
