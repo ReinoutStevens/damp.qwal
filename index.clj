@@ -168,7 +168,7 @@
    :var-type "macro",
    :line 320,
    :file "src/damp/qwal.clj"}
-  {:arglists ([[times] & goals]),
+  {:arglists ([times & goals]),
    :name "qtimes",
    :namespace "damp.qwal",
    :source-url nil,
@@ -178,7 +178,7 @@
    :var-type "function",
    :line 195,
    :file "src/damp/qwal.clj"}
-  {:arglists ([[times] & goals]),
+  {:arglists ([times & goals]),
    :name "qtimes<=",
    :namespace "damp.qwal",
    :source-url nil,
@@ -188,7 +188,7 @@
    :var-type "function",
    :line 223,
    :file "src/damp/qwal.clj"}
-  {:arglists ([[times] & goals]),
+  {:arglists ([times & goals]),
    :name "qtimes=>",
    :namespace "damp.qwal",
    :source-url nil,
