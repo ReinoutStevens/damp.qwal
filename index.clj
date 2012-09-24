@@ -7,6 +7,17 @@
    "(Quantified) regular path expressions over graphlike structures"}),
  :vars
  ({:arglists ([& goals]),
+   :name "all-goals",
+   :namespace "damp.qwal",
+   :source-url nil,
+   :raw-source-url nil,
+   :wiki-url "/damp.qwal-api.html#damp.qwal/all-goals",
+   :doc
+   "Helper function that creates a goal that solves all goals passed as argument",
+   :var-type "function",
+   :line 339,
+   :file "src/damp/qwal.clj"}
+  {:arglists ([& goals]),
    :name "q*",
    :namespace "damp.qwal",
    :source-url nil,
