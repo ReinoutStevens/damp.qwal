@@ -335,7 +335,12 @@ Second variable is the next world, and goal must ground this." }
                 ~@goals
                 (== ~current ~next)))))
 
-           
+
+(defn
+  ^{:doc "Helper function that creates a goal that solves all goals passed as argument"}
+  all-goals [& goals]
+  (fn [graph current next]
+    (solve-goals graph current next goals)))
       
     
 (comment
