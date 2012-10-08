@@ -60,7 +60,9 @@ Goal should ground next."}
 (defn
   ^{:doc "goals is a list of goals.
 Each goal is called, passing the next version of the previous goal as the
-current version of the current goal" }
+current version of the current goal.
+BUG: performance is horrible on larger graphs, in the process of investigating
+the reason."}
   solve-goals [graph curr end goals]
   (conde [(emptyo goals)
           (== curr end)]
@@ -89,8 +91,9 @@ current version of the current goal" }
   ^{:doc "goals may succeed zero to multiple times.
 Should detect loops by using tabled/slg resolution.
 q* is greedy, meaning it tries the longest path for which goals holds.
-see q*? for the reluctant variant.
-BUG: currently greedy behaves just as the reluctant version, even though it should not."}
+see q*? for the reluctant variant
+BUG: currently greedy behaves just as the reluctant version,
+as conde interleaves between its choices." }
   q* [& goals]
   (def q*loop
     (tabled
@@ -101,8 +104,7 @@ BUG: currently greedy behaves just as the reluctant version, even though it shou
               (q*loop graph next end goals))] ;;goals may succeed an arbitrary nr of times
       [(== current end)])))
   (fn [graph current next]
-    (all
-     (q*loop graph current next goals))))
+    (q*loop graph current next goals)))
 
 
 (defn
@@ -303,13 +305,12 @@ Second variable is the next world, and goal must ground this." }
   (let [genstart (gensym "start")
         genend (gensym "end")
         graphvar (gensym "graph")]
-    `(let [~graphvar ~graph]
+    `(let [~graphvar ~graph] ;;evaluate ~graph which either returns 
        (project [~graphvar]
                 (fresh  ~bindings
                         (fresh [~genstart ~genend]
                                (== ~start ~genstart)
                                (== ~end ~genend)
-                               (membero ~genstart (:nodes ~graphvar))
                                (solve-qrpe
                                 ~graphvar
                                 ~genstart
@@ -318,22 +319,31 @@ Second variable is the next world, and goal must ground this." }
 
 
 (defmacro
-  ^{:doc "macro to evaluate a series of goals in the same world"}
-  qin-current [& goals]
+  ^{:doc "macro to evaluate a series of conditions in the same world"}
+  qin-current [& conditions]
   (let [world (gensym "world")]
     `(qcurrent [~world]
-               ~@goals)))
+               ~@conditions)))
 
 
 (defmacro
-  ^{:doc "macro that evaluates a series of goals in the current world. current is bound to the current world"}
-  qcurrent [[current] & goals]
+  ^{:doc "macro that evaluates a series of conditions in the current world. current is bound to the current world"}
+  qcurrent [[current] & conditions]
   (let [next (gensym "next")
         graph (gensym "graph")]
     `(fn [~graph ~current ~next]
        (project [~current]
-                ~@goals
+                ~@conditions
                 (== ~current ~next)))))
+
+(defmacro qcurrento [[current] & conditions]
+  ^{:doc "macro that evaluated a series of conditions in the current worls. current is unified with the current world, and wrapped inside a project"}
+  `(fn [graph# curr# next#]
+    (all
+     (== ~current curr#)
+     (project [~current]
+              ~@conditions
+              (== curr# next#)))))
 
 
 (defn
@@ -360,7 +370,7 @@ Second variable is the next world, and goal must ground this." }
            [(== node :bar)
             (== to '(:baz))]
            [(== node :baz)
-            (== to '(:quux :coen))]
+            (== to '(:quux :rein))]
            [(== node :quux)
             (== to '(:foo))]))
 
@@ -372,20 +382,20 @@ Second variable is the next world, and goal must ground this." }
             (== from '(:foo))]
            [(== node :baz)
             (== from '(:bar))]
-           [(== node :coen)
+           [(== node :rein)
             (== from '(:baz))]
            [(== node :quux)
             (== from '(:baz))]))
   
   (def graph
-    (let [nodes (list :foo :bar :baz :quux)]
+    (let [nodes (list :foo :bar :baz :quux :rein)]
       {:nodes nodes
        :successors to-node
        :predecessors from-node}))
 
   (run* [end]
         (qwal graph (first (:nodes graph)) end
-              [info]
+              [info curro]
               (q=>*)
               (q=>* (qcurrent [curr] succeed))
               (q=>* (qcurrent [curr] (fresh [info] (has-info curr info))))
@@ -396,5 +406,5 @@ Second variable is the next world, and goal must ground this." }
               (q? (qcurrent [curr] (has-info curr :foo)) q=>)
               (qcurrent [curr] (has-info curr :baz))
               q=> q=>
-              (qcurrent [curr] (has-info curr info))))
+              (qcurrento [curro] (has-info curro info))))
   )

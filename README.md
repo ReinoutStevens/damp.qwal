@@ -16,8 +16,7 @@ The main function is qrpe, which stands for quantified regular path expression (
 The function has the following signature:
     (qrpe graph start end bindings & goals)
 
-* `graph` is the graph we are querying, and should at least understand the method `:nodes`, `:successors` and `:predecessors`.
-    * `(:nodes graph)` returns a collection of all the nodes in the graph
+* `graph` is the graph we are querying, and should at least understand the methods `:successors` and `:predecessors`.
     * `(:successors graph)` returns a rule that takes two variables. It binds the second variable to the list of nodes connected with the first variable.
     * `(:predecessors graph)` returns a rule that takes two variables. It binds
       the second variable to the list of nodes that can directly reach the
@@ -46,6 +45,7 @@ The following macros that generate goals are predefined:
 
 * `(qin-current & conditions)` returns a goal that succeeds when all the conditions succeed. It stays in the same world.
 * `(qcurrent [curr] & conditions)` is similar to `qin-current`, except that `curr` is bound to the current world.
+* `(qcurrento [curr] & conditions)` is similar to `qcurrent`, except that curr is unified with the current world, and wrapped inside a project.
 * `(qwhile current [& conditions ] & goals)` executes goals as long as conditions hold in current.
 
 The following functions are predefined that return goals:

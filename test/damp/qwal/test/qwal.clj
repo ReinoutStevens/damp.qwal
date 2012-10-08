@@ -60,14 +60,14 @@
 
 (def graph
   (let [nodes (range 1 11)]
-    {:nodes nodes
+    {:nodes (fn [] nodes)
      :successors to-node
      :predecessors from-node}))
 
 
 (def cyclic-graph
   (let [nodes (range 1 11)]
-    {:nodes nodes
+    {:nodes (fn [] nodes)
      :successors to-node-cyclic
      :predecessors from-node-cyclic}))
 
@@ -122,12 +122,84 @@
 
 (deftest basic-queries
   (is (= (basic-walk graph) '(10)))
-  (is (= (greedy-many graph) (reverse '(1 2 3 6 7 9 10))) "for reasons unknown greedy behaves as reluctant")
+  (is (= (greedy-many graph) (reverse '(1 2 3 6 7 9 10))) "greedy behaves as reluctant, as conde interleaves between options")
   (is (= (greedy-many cyclic-graph) (greedy-many graph)))
   (is (= (reluctant-many graph) '(1 2 3 6 7 9 10)))
   (is (= (reluctant-many cyclic-graph) (reluctant-many graph)))
-  (is (= (while-odd graph) '(2 6 10)))
-  (is (= (until-even graph) '(2 6 10))))
+  (is (= (while-odd graph) '(2 6 10))))
 
 
 
+(defn create-gigantic-graph [nr-nodes]
+  (let [node-names (map (fn [x]
+                          (gensym "node"))
+                        (range nr-nodes))]
+    ;;all nodes are interconnected
+    (defn to-nodes [from to]
+      (all
+       (== to node-names)))
+    (defn from-nodes [to from]
+      (all
+       (== from node-names)))
+    (let
+        [graph {:nodes (fn [] node-names)
+                :successors to-nodes
+                :predecessors from-nodes}]
+      graph)))
+
+
+(defn visit-all-nodes [graph]
+  (set (run* [end]
+        (qwal graph (first (get-nodes graph)) end []
+              (q=>*)
+              (qcurrent [curr]
+                        (fresh [info]
+                               (has-info curr info)))
+              (q=>+)
+              (qcurrent [curr]
+                        (fresh [info]
+                               (has-info curr info)))))))
+
+(defn looping-over-graphs []
+  (let [graphs (map (fn [x] (create-gigantic-graph 15)) (range 5))
+        nodes (set (mapcat get-nodes graphs))
+        res  (run* [x]
+                   (fresh [grapho starto]
+                          (membero grapho graphs)
+                          (project [grapho]
+                                   (== starto (first (get-nodes grapho))))
+                          (qwal grapho starto x []
+                                (q=>*)
+                                (qcurrent [curr]
+                                          (fresh [info]
+                                                 (has-info curr info)))
+                                (q=>+)
+                                (qcurrent [curr]
+                                          (fresh [info]
+                                                 (has-info curr info))))))]
+    (empty? (remove (fn [x]
+                 (contains? nodes x))))))
+       
+
+
+(deftest large-graph-queries
+  (let [graph (create-gigantic-graph 15)]
+    (is (= (visit-all-nodes graph)
+           (set (get-nodes graph))))
+    (is (looping-over-graphs))))
+    
+
+
+(defn create-linear-graph [n]
+  (let [nodes (range n)]
+    (defn to-node [node to]
+      (if (< node n)
+        (== to (seq (list (inc node))))
+        fail))
+    (defn from-node [node from]
+      (if (> node 0)
+        (== from (seq (list (dec node))))
+        fail))
+    {:nodes (fn [] nodes)
+     :successors to-node
+     :predecessors from-node}))
