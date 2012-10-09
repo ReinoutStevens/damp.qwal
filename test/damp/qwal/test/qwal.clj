@@ -15,6 +15,9 @@
   (qcurrent [current]
             (has-info current info)))
 
+(defn get-nodes [graph]
+  ((:nodes graph)))
+
 (defn
   ^{:doc "succeeds when to is the list of nodes that are direct successors of node" }
   to-node [node to]
@@ -122,7 +125,7 @@
 
 (deftest basic-queries
   (is (= (basic-walk graph) '(10)))
-  (is (= (greedy-many graph) (reverse '(1 2 3 6 7 9 10))) "greedy behaves as reluctant, as conde interleaves between options")
+  (is (= (greedy-many graph) (reverse '(1 2 3 6 7 9 10))) "greedy behaves as reluctant, as conde interleaves between option")
   (is (= (greedy-many cyclic-graph) (greedy-many graph)))
   (is (= (reluctant-many graph) '(1 2 3 6 7 9 10)))
   (is (= (reluctant-many cyclic-graph) (reluctant-many graph)))
@@ -182,11 +185,12 @@
        
 
 
-(deftest large-graph-queries
-  (let [graph (create-gigantic-graph 15)]
-    (is (= (visit-all-nodes graph)
-           (set (get-nodes graph))))
-    (is (looping-over-graphs))))
+(comment
+  (deftest large-graph-queries
+    (let [graph (create-gigantic-graph 15)]
+      (is (= (visit-all-nodes graph)
+             (set (get-nodes graph))))
+      (is (looping-over-graphs)))))
     
 
 

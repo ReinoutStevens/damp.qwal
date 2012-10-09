@@ -60,9 +60,7 @@ Goal should ground next."}
 (defn
   ^{:doc "goals is a list of goals.
 Each goal is called, passing the next version of the previous goal as the
-current version of the current goal.
-BUG: performance is horrible on larger graphs, in the process of investigating
-the reason."}
+current version of the current goal."}
   solve-goals [graph curr end goals]
   (conde [(emptyo goals)
           (== curr end)]
