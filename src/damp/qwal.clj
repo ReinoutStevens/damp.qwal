@@ -8,40 +8,50 @@
 (in-ns 'damp.qwal)
 
 
+
 (defn get-successors [graph node next]
   ((:successors graph) node next))
 
 (defn get-predecessors [graph node pred]
   ((:predecessors graph) node pred))
 
-;;;; QRPE
-;; Atm I am not sure whether adding quantifiers actually adds anything.
-;; The universal and existential quantifier are dual.
-;; Saying that an expression has to hold on all the paths between A and B
-;; is the same as finding a path between A and B where the exps does not hold.
+;;;; Regular Path Expressions
+
+(defn default-track-path [graph next end-of-path new-end-of-path]
+  (all
+   (conso next new-end-of-path end-of-path)))
+
+
+(defn track-path [graph next end-of-path new-end-of-path]
+  (all
+   (default-track-path graph next end-of-path new-end-of-path)))
+
 
 
 (defn
   ^{:doc "succeeds when next is a direct successor of node" }
-  trans [graph node next]
+  trans [graph node next end-of-path new-end-of-path]
   (fresh [nodes]
          (project [node]
                   (get-successors graph node nodes)
-                  (membero next nodes))))
+                  (membero next nodes)
+                  (track-path graph next end-of-path new-end-of-path))))
 
 (defn
   ^{:doc "succeeds when previous is a direct predecessor of node" }
-  rev-trans [graph node previous]
+  rev-trans [graph node previous end-of-path new-end-of-path]
   (fresh [nodes]
          (project [node]
                   (get-predecessors graph node nodes)
-                  (membero previous nodes))))
+                  (membero previous nodes)
+                  (track-path graph previous end-of-path new-end-of-path))))
 
 
 (defn
-  default-solve-goal [graph current next goal]
+  default-solve-goal [graph current next goal end-of-path new-end-of-path]
   (all
-   (goal graph current next)))
+   (goal graph current next end-of-path new-end-of-path)))
+   
 
 
 
@@ -49,11 +59,9 @@
   ^{:doc "solves goal in the current world.
 Arguments to the goal are goal, current and next.
 Goal should ground next."}
-  solve-goal [graph current next goal]
-  (let [goal-solver (:goal-solver graph)]
-    (if goal-solver
-      (goal-solver graph current next goal)
-      (default-solve-goal graph current next goal))))
+  solve-goal [graph current next end-of-path new-end-of-path goal]
+  (let [goal-solver (or (:goal-solver graph) default-solve-goal)]
+    (goal-solver graph current next end-of-path new-end-of-path goal)))
 
 
 
@@ -61,27 +69,28 @@ Goal should ground next."}
   ^{:doc "goals is a list of goals.
 Each goal is called, passing the next version of the previous goal as the
 current version of the current goal."}
-  solve-goals [graph curr end goals]
+  solve-goals [graph curr end end-of-path new-end-of-path goals]
   (conde [(emptyo goals)
-          (== curr end)]
-         [(fresh [h t next]
+          (== curr end)
+          (== end-of-path new-end-of-path)]
+         [(fresh [h t next newpathvar]
                  (conso h t goals)
                  (project [ curr h t ]
-                          (solve-goal graph curr next h)
-                          (solve-goals graph next end t)))]))
+                          (solve-goal graph curr next h end-of-path newpathvar)
+                          (solve-goals graph next end newpathvar new-end-of-path t)))]))
 
 (defn q=>
   ^{:doc "fancier syntax for trans"}
-  [graph current next]
+  [graph current next end-of-path new-end-of-path]
   (all
-   (trans graph current next)))
+   (trans graph current next end-of-path new-end-of-path)))
 
 
 (defn q<=
   ^{:doc "reverse transition"}
-  [graph current previous]
+  [graph current previous end-of-path new-end-of-path]
   (all
-   (rev-trans graph current previous)))
+   (rev-trans graph current previous end-of-path new-end-of-path)))
 
 
 
@@ -95,14 +104,17 @@ as conde interleaves between its choices." }
   q* [& goals]
   (def q*loop
     (tabled
-     [graph current end goals]
+     [graph current end goals end-of-path new-end-of-path]
+     (all
+      (trace-lvars "q*loop" current end-of-path new-end-of-path)
      (conde
-      [(fresh [next]
-              (solve-goals graph current next goals)
-              (q*loop graph next end goals))] ;;goals may succeed an arbitrary nr of times
-      [(== current end)])))
-  (fn [graph current next]
-    (q*loop graph current next goals)))
+      [(fresh [next fresh-end-of-path]
+              (solve-goals graph current next end-of-path fresh-end-of-path goals)
+              (q*loop graph next end goals fresh-end-of-path new-end-of-path))] ;;goals may succeed an arbitrary nr of times
+      [(== current end)
+       (== end-of-path new-end-of-path)]))))
+  (fn [graph current next end-of-path new-end-of-path]
+    (q*loop graph current next goals end-of-path new-end-of-path)))
 
 
 (defn
@@ -110,15 +122,16 @@ as conde interleaves between its choices." }
   q*? [& goals]
   (def q*?loop
     (tabled
-     [graph current end goals]
+     [graph current end goals end-of-path new-end-of-path ]
      (conde
-      [(== current end)]
-      [(fresh [next]
-              (solve-goals graph current next goals)
-              (q*?loop graph next end goals))])))
-  (fn [graph current next]
+      [(== current end)
+       (== end-of-path new-end-of-path)]
+      [(fresh [next fresh-end-of-path]
+              (solve-goals graph current next end-of-path fresh-end-of-path goals)
+              (q*?loop graph next goals fresh-end-of-path new-end-of-path))])))
+  (fn [graph current next end-of-path new-end-of-path]
     (all
-     (q*?loop graph current next goals))))
+     (q*?loop graph current next goals end-of-path new-end-of-path))))
 
 
 (defn
@@ -147,19 +160,19 @@ as conde interleaves between its choices." }
 (defn
   ^{:doc "same as q*, except goals should succeed at least once"}
   q+ [& goals]
-  (fn [graph current end]
-    (fresh [next]
-           (solve-goals graph current next goals)
-           ((apply q* goals) graph next end))))
+  (fn [graph current end end-of-path new-end-of-path]
+    (fresh [next fresh-end-of-path]
+           (solve-goals graph current next end-of-path fresh-end-of-path goals)
+           ((apply q* goals) graph next end fresh-end-of-path new-end-of-path))))
 
 
 (defn
   ^{:doc "same as q*?, except goals should succeed at least once"}
   q+? [& goals]
-  (fn [graph current end]
-    (fresh [next]
-           (solve-goals graph current next goals)
-           ((apply q*? goals) graph next end))))
+  (fn [graph current end end-of-path new-end-of-path]
+    (fresh [next fresh-end-of-path]
+           (solve-goals graph current next end-of-path fresh-end-of-path goals)
+           ((apply q*? goals) graph next end fresh-end-of-path new-end-of-path))))
 
 (defn
   ^{:doc "see q+, but also calls q=> at the end of goals"}
@@ -186,33 +199,36 @@ as conde interleaves between its choices." }
 (defn
   ^{:doc "goals may succeed or not"}
   q? [& goals]
-  (fn [graph curr next]
-    (conde [(solve-goals graph curr next goals)]
-           [(== curr next)])))
+  (fn [graph curr next end-of-path new-end-of-path]
+    (conde [(solve-goals graph curr next end-of-path new-end-of-path goals)]
+           [(== curr next)
+            (== end-of-path new-end-of-path)])))
 
 
 ;;one may argue about tabling this or not
 (defn
   ^{:doc "goals has to succeed times times"}
   qtimes [times & goals]
-  (defn times-bound-loop [graph curr next number]
-    (fresh [neext]
+  (defn times-bound-loop [graph curr next end-of-path new-end-of-path number]
+    (fresh [neext fresh-end-of-path]
            (conde [(== number times)
-                   (== curr next)]
+                   (== curr next)
+                   (== end-of-path new-end-of-path)]
                   [(== true (< number times))
-                   (solve-goals graph curr neext goals)
-                   (times-bound-loop graph neext next (inc number))])))
-  (defn times-unbound-loop [graph curr next number]
-    (fresh [neext]
+                   (solve-goals graph curr neext end-of-path fresh-end-of-path goals)
+                   (times-bound-loop graph neext next fresh-end-of-path new-end-of-path (inc number))])))
+  (defn times-unbound-loop [graph curr next end-of-path new-end-of-path number]
+    (fresh [neext fresh-end-of-path]
            (conde [(== number times)
-                   (== curr next)]
-                  [(solve-goals graph curr neext goals)
-                   (times-unbound-loop graph neext next (inc number))])))
-  (fn [graph curr next]
+                   (== curr next)
+                   (== end-of-path new-end-of-path)]
+                  [(solve-goals graph curr neext end-of-path fresh-end-of-path goals)
+                   (times-unbound-loop graph neext next fresh-end-of-path new-end-of-path (inc number))])))
+  (fn [graph curr next end-of-path new-end-of-path]
     (project [times]
              (if (lvar? times) ;;unbound
-               (times-unbound-loop graph curr next 0)
-               (times-bound-loop graph curr next 0)))))
+               (times-unbound-loop graph curr next end-of-path new-end-of-path 0)
+               (times-bound-loop graph curr next end-of-path new-end-of-path 0)))))
 
 (defn
   ^{:doc "see qtimes, but also calls q=> at the end of goals"}
@@ -234,11 +250,12 @@ as conde interleaves between its choices." }
 (defn
   ^{:doc "implementing naf using conda"}
   qfail [& goals]
-  (fn [graph current next]
+  (fn [graph current next end-of-path new-end-of-path]
     (conda
-     [(solve-goals graph current next goals)
+     [(solve-goals graph current next end-of-path new-end-of-path goals)
       fail]
-     [(== current next)])))
+     [(== current next)
+      (== end-of-path new-end-of-path)])))
 
 
 (defmacro
@@ -254,39 +271,25 @@ Goals are executed until conditions hold in current."}
 Current is bound to the current world and can thus be used in conditions.
 Note that when & goals doesn't go to a successor zero results are found."}
   qwhile [current [& conditions] & goals]
-  (let [graphvar (gensym "graph")
-        nextvar (gensym "next")
-        endvar (gensym "end")
-        loopvar (gensym "qwhile-loop")
-        realgoals (if (nil? goals) '() goals)]
-    `(fn [~graphvar ~current ~endvar]
-       (def ~loopvar
-         (tabled [ ~graphvar ~current ~endvar ]
-                 (project [~current]
+  (let [realgoals (if (nil? goals) '() goals)]
+    `(fn [graphvar# current# endvar# end-of-path# new-end-of-path#]
+       (def loopvar#
+         (tabled [ graphvar# current# endvar# end-of-path# new-end-of-path# ]
+                 (project [current#]
                           (conda [~@conditions
-                                  (fresh [~nextvar]
+                                  (fresh [nextvar# fresh-path#]
                                          ;;for reasons unknown this doesnt work when you just use ~realgoals
-                                         (solve-goals ~graphvar ~current ~nextvar (list ~@realgoals))
-                                         (~loopvar ~graphvar ~nextvar ~endvar))]
-                                 [(== ~current ~endvar)]))))
-       (~loopvar ~graphvar ~current ~endvar))))
+                                         (solve-goals graphvar# current# nextvar# end-of-path# fresh-path# (list ~@realgoals))
+                                         (loopvar# graphvar# nextvar# endvar# fresh-path# new-end-of-path#))]
+                                 [(== current# endvar#)
+                                  (== end-of-path# new-end-of-path#)]))))
+       (loopvar# graphvar# current# endvar# end-of-path# new-end-of-path#))))
 
-
-
-
-(defn
-  ^{:doc "main rule that solves a qrpe"}
-  solve-qrpe [graph start end & goals ]
-  (conde  [(fresh [h t next]
-                  (!= nil goals)
-                  (conso h t goals)
-                  (project [start h t]
-                           (solve-goal graph start next h)
-                           (apply solve-qrpe  graph next end t)))]
-          [(== nil goals) ;; (emptyo goals) doesnt work for reasons unknown to the author
-           (== start end)]))
-
-
+(defn solve-qrpe [graph start end end-of-path new-end-of-path & goals]
+  (all
+   (solve-goals graph start end end-of-path new-end-of-path goals)))
+   
+       
 
 ;;Macros for nicer syntax, because sugar is good for you
 (defmacro
@@ -299,20 +302,24 @@ Exps are the actual goals that should hold on the path through the graph.
 Each goal should be a rule that takes 2 variables.
 First variable is the current world, and will be ground.
 Second variable is the next world, and goal must ground this." }
-  qwal [graph start end bindings & exps ]
+  qwal [graph start end path bindings & exps ]
   (let [genstart (gensym "start")
         genend (gensym "end")
-        graphvar (gensym "graph")]
-    `(let [~graphvar ~graph] ;;evaluate ~graph which either returns 
+        graphvar (gensym "graph")
+        startpath (gensym "startpath")
+        endpath (gensym "endpath")]
+    `(let [~graphvar ~graph] 
        (project [~graphvar]
                 (fresh  ~bindings
-                        (fresh [~genstart ~genend]
+                        (fresh [~genstart ~genend ~startpath ~endpath]
                                (== ~start ~genstart)
                                (== ~end ~genend)
                                (solve-qrpe
                                 ~graphvar
                                 ~genstart
                                 ~genend
+                                ~path
+                                '()
                                 ~@exps)))))))
 
 
@@ -327,12 +334,11 @@ Second variable is the next world, and goal must ground this." }
 (defmacro
   ^{:doc "macro that evaluates a series of conditions in the current world. current is bound to the current world"}
   qcurrent [[current] & conditions]
-  (let [next (gensym "next")
-        graph (gensym "graph")]
-    `(fn [~graph ~current ~next]
+  `(fn [graph# ~current next# end-of-path# new-end-of-path#]
        (project [~current]
                 ~@conditions
-                (== ~current ~next)))))
+                (== ~current next#)
+                (== end-of-path# new-end-of-path#))))
 
 (defmacro qcurrento [[current] & conditions]
   ^{:doc "macro that evaluated a series of conditions in the current worls. current is unified with the current world, and wrapped inside a project"}
@@ -349,6 +355,12 @@ Second variable is the next world, and goal must ground this." }
   all-goals [& goals]
   (fn [graph current next]
     (solve-goals graph current next goals)))
+
+
+(defn
+  ^{:doc "Poorly named function that can be used inside a goal to solve more goals"}
+  solve-all-goals [graph current next & goals]
+  (solve-goals graph current next goals))
       
     
 (comment
@@ -368,7 +380,7 @@ Second variable is the next world, and goal must ground this." }
            [(== node :bar)
             (== to '(:baz))]
            [(== node :baz)
-            (== to '(:quux :rein))]
+            (== to '(:quux))]
            [(== node :quux)
             (== to '(:foo))]))
 
