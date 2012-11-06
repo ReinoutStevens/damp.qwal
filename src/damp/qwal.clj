@@ -334,8 +334,9 @@ Second variable is the next world, and goal must ground this." }
                 ~@conditions
                 (== ~current ~next)))))
 
-(defmacro qcurrento [[current] & conditions]
+(defmacro
   ^{:doc "macro that evaluated a series of conditions in the current worls. current is unified with the current world, and wrapped inside a project"}
+  qcurrento [[current] & conditions]
   `(fn [graph# curr# next#]
     (all
      (== ~current curr#)
