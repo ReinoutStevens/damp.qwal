@@ -1,5 +1,5 @@
 (ns
-    ^{:doc "(Quantified) regular path expressions over graphlike structures"
+    ^{:doc "Regular path expressions over graphlike structures"
       :author "Reinout Stevens"}
   damp.qwal
   (:refer-clojure :exclude [==])
@@ -272,7 +272,23 @@ Note that when & goals doesn't go to a successor zero results are found."}
        (~loopvar ~graphvar ~current ~endvar))))
 
 
-
+(defmacro qscan [[var newvar init result] & goals]
+  ^{:doc "Calls goals an arbitrary number of times, each time unifying var with newvar, bound in the previous iteration.
+Initially, var is bound to init. Qscan first returns init, and then each value of newvar.
+Note that running this on a cyclic graph results in an infinite number of solutions, and thus will not end."}
+  `(fn [graph# current# end#]
+     (defn loopfun# [oldvalue# state#]
+       (conde [(== state# end#)
+               (== oldvalue# ~result)]
+              [(fresh [~var next# ~newvar]
+                      (== ~var oldvalue#)
+                      (project [~var]
+                               (solve-goals graph# state# next# (list ~@goals))
+                               (loopfun# ~newvar next#)))]))
+     (fresh [~var]
+            (== ~var ~init)
+            (loopfun# ~var current#))))
+            
 
 (defn
   ^{:doc "main rule that solves a qrpe"}
@@ -303,7 +319,7 @@ Second variable is the next world, and goal must ground this." }
   (let [genstart (gensym "start")
         genend (gensym "end")
         graphvar (gensym "graph")]
-    `(let [~graphvar ~graph] ;;evaluate ~graph which either returns 
+    `(let [~graphvar ~graph]
        (project [~graphvar]
                 (fresh  ~bindings
                         (fresh [~genstart ~genend]
@@ -343,6 +359,7 @@ Second variable is the next world, and goal must ground this." }
      (project [~current]
               ~@conditions
               (== curr# next#)))))
+
 
 
 (defn
@@ -406,4 +423,12 @@ Second variable is the next world, and goal must ground this." }
               (qcurrent [curr] (has-info curr :baz))
               q=> q=>
               (qcurrento [curro] (has-info curro info))))
+  
+  (run 5 [result end]
+       (qwal graph  (first (:nodes graph)) end []
+		       (qrecur [start next "" result]
+                               (qcurrent [curr]
+                                         (project [start]
+                                                  (== next (apply str (concat (str curr) (str start))))))
+			       q=>)))
   )
