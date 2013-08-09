@@ -47,6 +47,8 @@ The following macros that generate goals are predefined:
 * `(qcurrent [curr] & conditions)` is similar to `qin-current`, except that `curr` is bound to the current world.
 * `(qcurrento [curr] & conditions)` is similar to `qcurrent`, except that curr is unified with the current world, and wrapped inside a project.
 * `(qwhile current [& conditions ] & goals)` executes goals as long as conditions hold in current.
+* `(qscan [var newvar init result] & goals)` executes goals an arbitrary number of times, unifying `var` with the value of `newvar`* from the previous iteration. 
+    Initially, `var` is bound to `init`. `result` will be bound to each value of `var`. Does not terminate on a cyclic graph.
 
 The following functions are predefined that return goals:
 
